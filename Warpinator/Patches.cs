@@ -1,0 +1,35 @@
+using HarmonyLib;
+using StardewValley;
+using StardewValley.Tools;
+
+using SObject = StardewValley.Object;
+
+namespace NermNermNerm.Warpinator;
+
+internal static class Patches
+{
+    private static ModEntry mod = null!;
+
+    internal static void Patch(ModEntry mod)
+    {
+        Patches.mod = mod;
+        var harmony = new Harmony(mod.ModManifest.UniqueID);
+
+        harmony.Patch(
+            typeof(Wand).GetMethod(nameof(Wand.DoFunction)),
+            new(typeof(Patches), nameof(WandDoFunctionPrefix)));
+    }
+
+    private static bool WandDoFunctionPrefix(GameLocation location, SObject __instance)
+    {
+        // if (__instance.isTemporarilyInvisible)
+        // 	return true;
+
+
+        if (Patches.mod.IsWandUseBlocked)
+            return true;
+
+        Patches.mod.UseWandInNoTotemMode();
+        return false;
+    }
+}

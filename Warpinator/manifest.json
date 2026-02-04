@@ -1,0 +1,12 @@
+﻿{
+    "$schema": "https://smapi.io/schemas/manifest.json",
+    "Name": "Junimatic",
+    "Author": "NermNermNerm",
+    "Version": "1.0.0",
+    "MinimumApiVersion": "3.14.0",
+    "UniqueID": "NermNermNerm.Warpinator",
+    "Description": "A balanced way to teleport.",
+    "EntryDll": "Warpinator.dll",
+    "UpdateKeys": [ "GitHub:NermNermNerm/Warpinator" ],
+    "Dependencies": [ ]
+}
