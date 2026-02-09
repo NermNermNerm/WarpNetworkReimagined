@@ -1,1 +1,9 @@
-﻿
+﻿- [x] Using the marionberry should bring up a menu
+- [ ] The menu should support slow-warp as well as normal
+- [ ] Using a totem doesn't reduce the count of items.
+- [ ] Warps to the farm should go to the house (? maybe a config?)
+- [ ] Maybe add images for the totem to the menu
+- [ ] No hud message appears when converting totems from menu to wallet
+- [ ] Need a way to get the initial Marionberry
+- [ ] Progression: Initial, Faster, Totem Wallet, Obelisk Integration, Return
+- [ ] Consider a config that makes 1 totem count as 2 or more.  Perhaps make it also just apply to totems in the valley.

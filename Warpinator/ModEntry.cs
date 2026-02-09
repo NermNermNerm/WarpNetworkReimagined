@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -13,6 +14,7 @@ using StardewValley;
 using StardewValley.Characters;
 using StardewValley.GameData.Objects;
 using StardewValley.GameData.Tools;
+using Warpinator;
 using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 namespace NermNermNerm.Warpinator;
@@ -35,6 +37,8 @@ public class ModEntry
 
     public Harmony Harmony = null!;
 
+    public readonly TotemInventory TotemInventory = new TotemInventory();
+
     public ModEntry() { }
 
     public override void Entry(IModHelper helper)
@@ -53,6 +57,8 @@ public class ModEntry
         Patches.Patch(this);
 
         this.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
+
+        this.TotemInventory.Entry(this );
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
@@ -122,6 +128,19 @@ public class ModEntry
                                  || Game1.player.bathingClothes.Value
                                  || Game1.player.onBridge.Value;
 
+    public void UseWandWithMenu()
+    {
+        var totems = this.TotemInventory.GetTotemInventory();
+        if (!totems.Any(t => t.QualifiedItemId == I("(O)688")))
+        {
+            var warpTotemFarm = ItemRegistry.Create<StardewValley.Object>("(O)688");
+            warpTotemFarm.Stack = 0; // Because you can't actually do this with Create
+            totems.Add(warpTotemFarm);
+        }
+
+        totems.Sort((left, right) => string.Compare(left.DisplayName, right.DisplayName, StringComparison.CurrentCulture));
+        Game1.activeClickableMenu = new WarpMenu(this, totems);
+    }
 
     public void UseWandInNoTotemMode()
     {

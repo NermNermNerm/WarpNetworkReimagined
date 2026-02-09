@@ -29,7 +29,8 @@ internal static class Patches
         if (Patches.mod.IsWandUseBlocked)
             return true;
 
-        Patches.mod.UseWandInNoTotemMode();
+        // Patches.mod.UseWandInNoTotemMode();
+        Patches.mod.UseWandWithMenu();
         return false;
     }
 }
