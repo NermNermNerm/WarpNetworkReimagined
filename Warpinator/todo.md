@@ -7,3 +7,4 @@
 - [ ] Need a way to get the initial Marionberry
 - [ ] Progression: Initial, Faster, Totem Wallet, Obelisk Integration, Return
 - [ ] Consider a config that makes 1 totem count as 2 or more.  Perhaps make it also just apply to totems in the valley.
+- [ ] Warp totems should only be added to the marionberry if it's in your inventory

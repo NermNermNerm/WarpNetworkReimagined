@@ -34,13 +34,13 @@ public class TotemInventory : ModLet
                 var clone = (StardewValley.Object)newTotem.getOne();
                 clone.Stack = newTotem.Stack;
                 updatedTotemCounts.Add(clone);
-
-                Game1.hudMessages.Add(new HUDMessage(clone.Stack == 1 ? LF($"Added a {clone.DisplayName} to your Marionberry wallet.") : LF($"Added {clone.Stack} charges of {clone.DisplayName} to your Marionberry wallet.")));
             }
             else
             {
                 existingTotem.Stack += newTotem.Stack;
             }
+
+            Game1.hudMessages.Add(new HUDMessage(newTotem.Stack == 1 ? LF($"Added a {newTotem.DisplayName} to your Marionberry wallet.") : LF($"Added {newTotem.Stack} charges of {newTotem.DisplayName} to your Marionberry wallet."), timeLeft: 5250));
 
             Game1.player.removeItemFromInventory(newTotem);
         }
