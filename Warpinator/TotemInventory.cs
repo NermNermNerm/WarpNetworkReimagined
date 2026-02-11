@@ -24,6 +24,12 @@ public class TotemInventory : ModLet
     {
         List<StardewValley.Object>? updatedTotemCounts = null;
 
+        if (!Game1.player.Items.Any(i => i?.QualifiedItemId == ModEntry.MarionBerryToolQiid))
+        {
+            // Player hasn't got a marionberry, so we don't do anything.
+            return;
+        }
+
         foreach (var newTotem in eventArgs.Added.OfType<StardewValley.Object>().Where(this.IsWarpTotem))
         {
             updatedTotemCounts ??= this.GetTotemInventory();
@@ -40,7 +46,10 @@ public class TotemInventory : ModLet
                 existingTotem.Stack += newTotem.Stack;
             }
 
-            Game1.hudMessages.Add(new HUDMessage(newTotem.Stack == 1 ? LF($"Added a {newTotem.DisplayName} to your Marionberry wallet.") : LF($"Added {newTotem.Stack} charges of {newTotem.DisplayName} to your Marionberry wallet."), timeLeft: 5250));
+            string hudMessageTitle = newTotem.Stack == 1
+                ? LF($"Added a {newTotem.DisplayName} to your Marionberry wallet.")
+                : LF($"Added {newTotem.Stack} charges of {newTotem.DisplayName} to your Marionberry wallet.");
+            Game1.hudMessages.Add(new HUDMessage(hudMessageTitle, timeLeft: 5250) { messageSubject = newTotem });
 
             Game1.player.removeItemFromInventory(newTotem);
         }

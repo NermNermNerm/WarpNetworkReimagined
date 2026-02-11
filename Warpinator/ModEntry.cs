@@ -99,7 +99,7 @@ public class ModEntry
             DisplayName = L("teleporter"),
             Description = L("Norvin the bridge troll's old Marionberry(tm) teleporter."),
             Texture = ModEntry.OneTileSpritesPseudoPath,
-            SpriteIndex = 1,
+            SpriteIndex = 7,
             MenuSpriteIndex = -1,
             UpgradeLevel = 0,
             ConventionalUpgradeFrom = null,
