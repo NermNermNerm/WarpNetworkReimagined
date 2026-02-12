@@ -5,9 +5,11 @@
 - [ ] Using a totem should reduce the count of items.
 - [ ] Warps to the farm should go to the house (? maybe a config?)
 - [x] Maybe add images for the totem to the menu
-- [ ] Try and add images for the totem in the HUD message
+- [x] Try and add images for the totem in the HUD message
 - [x] No hud message appears when converting totems from menu to wallet
 - [ ] Need a way to get the initial Marionberry
 - [ ] Progression: Initial, Faster, Totem Wallet, Obelisk Integration, Return
-- [ ] Consider a config that makes 1 totem count as 2 or more.  Perhaps make it also just apply to totems in the valley.
+- [x] Consider a config that makes 1 totem count as 2 or more.  Perhaps make it also just apply to totems in the valley.
+      Perhaps make it change the totem recipes to double the yield
+- [ ] Add a really expensive item that makes it like there's an obilisk at the farm.
 - [x] Warp totems should only be added to the marionberry if it's in your inventory

@@ -1,6 +1,6 @@
 ﻿{
     "$schema": "https://smapi.io/schemas/manifest.json",
-    "Name": "Junimatic",
+    "Name": "Warpinator",
     "Author": "NermNermNerm",
     "Version": "1.0.0",
     "MinimumApiVersion": "3.14.0",

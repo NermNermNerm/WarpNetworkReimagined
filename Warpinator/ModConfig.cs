@@ -7,4 +7,9 @@ public class ModConfig
     ///  ability without using a warp totem.
     /// </summary>
     public int WarpHomeTimeCost { get; set; } = 3;
+
+    /// <summary>
+    ///   Makes it so that crafting recipes yield more than just one totem.
+    /// </summary>
+    public int TotemRecipeYield { get; set; } = 1;
 }

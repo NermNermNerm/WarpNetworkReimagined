@@ -1,6 +1,6 @@
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-
+using StardewValley;
 using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 namespace NermNermNerm.Warpinator;
@@ -32,10 +32,27 @@ public class ModConfigMenu
 
         configMenu.AddNumberOption(
             mod: this.mod.ModManifest,
-            name: () => L("Ten-minute intervals eaten by warping home"),
+            name: () => L("Slow-Warp cost:"),
             getValue: () => ModEntry.Config.WarpHomeTimeCost,
             setValue: value => ModEntry.Config.WarpHomeTimeCost = value,
-            tooltip: () => L("The number of 10-minute intervals that spin by when using the initial version of the tool - e.g. 3 would make warping home take 30 minutes.")
+            tooltip: () => L("The number of 10-minute intervals that spin by when using the initial version of the tool - e.g. 3 would make warping home take 30 minutes."),
+            min: 0,
+            max: 6
         );
+
+        configMenu.AddNumberOption(
+            mod: this.mod.ModManifest,
+            name: () => L("Crafted Totem Yield:"),
+            getValue: () => ModEntry.Config.TotemRecipeYield,
+            setValue: value =>
+            {
+                ModEntry.Config.TotemRecipeYield = value;
+                this.mod.Helper.GameContent.InvalidateCache("Data/CraftingRecipes");
+            },
+            tooltip: () => L("Modifies all totem crafting recipes to produce this many totems - e.g. 2 would double the number of totems you get per craft."),
+            min: 1,
+            max: 3
+        );
+
     }
 }

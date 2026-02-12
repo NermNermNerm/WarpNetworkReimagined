@@ -37,7 +37,8 @@ public class ModEntry
 
     public Harmony Harmony = null!;
 
-    public readonly TotemInventory TotemInventory = new TotemInventory();
+    public readonly TotemInventory TotemInventory = new();
+    public readonly CraftedTotemMultiplier CraftedTotemMultiplier = new();
 
     public ModEntry() { }
 
@@ -58,7 +59,8 @@ public class ModEntry
 
         this.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
 
-        this.TotemInventory.Entry(this );
+        this.TotemInventory.Entry(this);
+        this.CraftedTotemMultiplier.Entry(this);
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
@@ -78,6 +80,7 @@ public class ModEntry
         {
             e.LoadFromModFile<Texture2D>("assets/Sprites.png", AssetLoadPriority.Exclusive);
         }
+
         // else if (e.NameWithoutLocale.StartsWith("Characters/Dialogue/"))
         // {
         //     e.Edit(editor =>

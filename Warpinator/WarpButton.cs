@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
-using System;
-
 using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 // ADAPTED FROM: https://github.com/tlitookilakin/WarpNetwork/blob/master/WarpNetwork/ui/WarpButton.cs
