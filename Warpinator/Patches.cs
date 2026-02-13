@@ -13,9 +13,8 @@ internal static class Patches
     internal static void Patch(ModEntry mod)
     {
         Patches.mod = mod;
-        var harmony = new Harmony(mod.ModManifest.UniqueID);
 
-        harmony.Patch(
+        mod.Harmony.Patch(
             typeof(Wand).GetMethod(nameof(Wand.DoFunction)),
             new(typeof(Patches), nameof(WandDoFunctionPrefix)));
     }

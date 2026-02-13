@@ -53,6 +53,5 @@ public class ModConfigMenu
             min: 1,
             max: 3
         );
-
     }
 }

@@ -39,6 +39,7 @@ public class ModEntry
 
     public readonly TotemInventory TotemInventory = new();
     public readonly CraftedTotemMultiplier CraftedTotemMultiplier = new();
+    public readonly HomeSpot HomeSpot = new();
 
     public ModEntry() { }
 
@@ -61,6 +62,7 @@ public class ModEntry
 
         this.TotemInventory.Entry(this);
         this.CraftedTotemMultiplier.Entry(this);
+        this.HomeSpot.Entry(this);
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)

@@ -3,7 +3,9 @@
       Maybe make it so the sell price equals the buy price so if you accidentally buy one it
       doesn't hurt you.  Slow warp shouldn't be available to desert&island.
 - [ ] Using a totem should reduce the count of items.
-- [ ] Warps to the farm should go to the house (? maybe a config?)
+- [ ] Warps to the farm should go to the house (? maybe a config?)  How about an item that you can buy
+      that, on-use sets the destination.  Perhaps constrain it to the farm to prevent abuse and give
+      the seller limited inventory.
 - [x] Maybe add images for the totem to the menu
 - [x] Try and add images for the totem in the HUD message
 - [x] No hud message appears when converting totems from menu to wallet

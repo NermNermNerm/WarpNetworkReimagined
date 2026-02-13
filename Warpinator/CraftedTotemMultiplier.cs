@@ -42,7 +42,7 @@ public class CraftedTotemMultiplier : ModLet
     }
 
     private static readonly Regex recipePattern =
-        new(@"^[^/]+/[^/]+/(?<itemId>[^/ ]+)( (?<quantity>\d+))?/", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        new(@"^[^/]+/[^/]*/(?<itemId>[^/ ]+)( (?<quantity>\d+))?/", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     private void UpdateTotemRecipes(IDictionary<string, string> allRecipes)
     {
