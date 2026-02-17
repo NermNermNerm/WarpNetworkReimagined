@@ -52,7 +52,7 @@ public class HomeSpot : ModLet
         }
         else
         {
-
+            mod.Harmony.Patch(obWarpForRealMethod, new HarmonyMethod(typeof(HomeSpot), nameof(HomeSpot.PatchObeliskWarpForReal)));
         }
     }
 

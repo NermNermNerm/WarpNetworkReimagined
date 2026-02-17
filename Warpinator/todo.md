@@ -1,5 +1,5 @@
 ﻿- [x] Using the marionberry should bring up a menu
-- [ ] The menu should support slow-warp as well as normal - maybe buy slow-warp items?
+- [x] The menu should support slow-warp as well as normal - maybe buy slow-warp items?
       Maybe make it so the sell price equals the buy price so if you accidentally buy one it
       doesn't hurt you.  Slow warp shouldn't be available to desert&island.
       Slow-warp mountain/beach really aren't more than a convenience item, so should be ~1000g.
@@ -8,7 +8,7 @@
       home for the night...  Do both run off the clock?).  Perhaps a choice of two settings
       would be the way "Ban slow-warp" and "Slow warp for free".  If you go for slow warp for
       free, then it'd be like having the obs for mountain and beach and farm.
-- [ ] Using a totem should reduce the count of items.
+- [x] Using a totem should reduce the count of items.
 - [x] Warps to the farm should go to the house (? maybe a config?)  How about an item that you can buy
       that, on-use, sets the destination.  Perhaps constrain it to the farm to prevent abuse and give
       the seller limited inventory.

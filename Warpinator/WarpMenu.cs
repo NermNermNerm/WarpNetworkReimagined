@@ -334,7 +334,6 @@ class WarpMenu : IClickableMenu
             Game1.addHUDMessage(new HUDMessage(L("You can't warp there now - today's festival is being set up.}")));
         }
 
-
         if (destination.totem is not null)
         {
             this.mod.TotemInventory.ReduceCount(destination.totem);
