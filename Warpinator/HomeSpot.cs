@@ -44,6 +44,16 @@ public class HomeSpot : ModLet
         {
             mod.Harmony.Patch(warpForRealMethod, new HarmonyMethod(typeof(HomeSpot), nameof(PatchTotemWarpForReal)));
         }
+
+        var obWarpForRealMethod = typeof(StardewValley.Buildings.Building).GetMethod("obeliskWarpForReal", BindingFlags.NonPublic | BindingFlags.Static);
+        if (obWarpForRealMethod is null)
+        {
+            this.LogWarning($"This version of StardewValley has changed the method 'StardewValley.Buildings.Building.obeliskWarpForReal', so the custom warp-farm location feature of this mod will not work.");
+        }
+        else
+        {
+
+        }
     }
 
     private static readonly Regex HomeSpotValueRegex = new(@"^(?<x>\d+),(?<y>\d+),(?<loc>.+)$", RegexOptions.Compiled);
@@ -52,7 +62,7 @@ public class HomeSpot : ModLet
     ///   Gets the location that the player has set to return to on the farm.  If the player has
     /// never set the location, it returns <code>(null,(0,0))</code>.
     /// </summary>
-    private (GameLocation? location, Point tile) HomeLocation
+    public (GameLocation? location, Point tile) HomeLocation
     {
         // Save/Load from player's modData
         get
@@ -173,7 +183,39 @@ public class HomeSpot : ModLet
         Game1.player.temporarilyInvincible = false;
         Game1.player.temporaryInvincibilityTimer = 0;
         Game1.displayFarmer = true;
-        return false; // Don't run main function, we took care of it.
+        return false; // Don't run main function; we took care of it.
+    }
+
+    private static bool PatchObeliskWarpForReal(string destination)
+    {
+        // NOTE!  The method we're patching takes an argument, 'Farmer who'...  But if you look at the
+        //  implementation of that method, it ignores it -- the money-shot call, Game1.warpFarmer always
+        //  warps Game1.player.
+        if (destination != I("Farm") || Game1.player.ActiveItem.QualifiedItemId != ModEntry.MarionBerryToolQiid)
+        {
+            return true; // Not using the Marionberry or not going to farm.
+        }
+
+        var warpTarget = ModEntry.Instance.HomeSpot.HomeLocation;
+        if (warpTarget.location is null)
+        {
+            return true; // User hasn't overridden it, so let the base game put us where it will.
+        }
+
+        var lr = new LocationRequest(warpTarget.location.Name, warpTarget.location is not Farm, warpTarget.location);
+        // Since we always warp to the front door of the farmhouse and cabins, face upwards so the farmer doesn't look wierd.
+        // On the farm, since we're at a given x/y, might as well show our beautiful mug to the camera.
+
+        Game1.warpFarmer( lr, warpTarget.tile.X, warpTarget.tile.Y, warpTarget.location is Farm ? 2 : 0);
+
+        // Note this code is identical to PatchTotemWarpForReal, but what we're really striving for is
+        // to be identical to Building.obeliskWarpForReal
+        Game1.fadeToBlackAlpha = 0.99f;
+        Game1.screenGlow = false;
+        Game1.player.temporarilyInvincible = false;
+        Game1.player.temporaryInvincibilityTimer = 0;
+        Game1.displayFarmer = true;
+        return false; // Don't run main function; we took care of it.
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)

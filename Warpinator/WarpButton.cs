@@ -16,19 +16,19 @@ class WarpButton : ClickableComponent
 	public readonly int index = 0;
 	private static readonly Rectangle bg = new(384, 396, 15, 15);
 
-    private StardewValley.Object totem;
+    private WarpMenu.Destination destination;
 
-    public StardewValley.Object Totem => this.totem;
+    public WarpMenu.Destination Destination => this.destination;
 
-	public WarpButton(Rectangle bounds, StardewValley.Object totem, int index) : base(bounds, "")
+	public WarpButton(Rectangle bounds, WarpMenu.Destination destination, int index) : base(bounds, "")
 	{
 		this.index = index;
-        this.totem = totem;
+        this.destination = destination;
     }
 
-	public void changeTotem(StardewValley.Object totem)
+	public void changeTotem(WarpMenu.Destination totem)
     {
-        this.totem = totem;
+        this.destination = totem;
 	}
 
     public void draw(SpriteBatch b)
@@ -48,7 +48,13 @@ class WarpButton : ClickableComponent
 		IClickableMenu.drawTextureBox(b, Game1.mouseCursors, WarpButton.bg, this.bounds.X, this.bounds.Y, this.bounds.Width, this.bounds.Height, this.tint, this.scale, false);
         // TODO: Maybe draw the warp totem?
 		// b.Draw(this.texture, new Rectangle(this.bounds.X + 12, this.bounds.Y + 12, this.bounds.Height - 24, this.bounds.Height - 24), Color.White);
-        string text = IF($"{this.totem.DisplayName} ({this.totem.Stack})"); // TODO: make nicer
+        string text = (this.destination.target is null)
+            ? IF($"{this.destination.totem!.DisplayName} ({this.destination.totem.Stack})")
+            : (this.destination.obeliskWarpCode is not null
+                ? LF($"{this.destination.target.DisplayName} via obelisk")
+                : (this.destination.totem is null
+                    ? LF($"{this.destination.target.DisplayName} via slow-warp")
+                    : LF($"{this.destination.target.DisplayName} via totem ({this.destination.totem!.Stack})")));
         var textSize = Game1.dialogueFont.MeasureString(text);
 
 		Utility.drawTextWithShadow(b, text, Game1.dialogueFont, new Vector2(this.bounds.X + this.bounds.Height - 9, MathF.Round(this.bounds.Y - textSize.Y / 2f + this.bounds.Height / 2f + 6)), Game1.textColor);
