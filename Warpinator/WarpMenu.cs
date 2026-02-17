@@ -191,9 +191,27 @@ class WarpMenu : IClickableMenu
 
     private GameLocation? FindLocationForTotem(StardewValley.Object totem)
     {
+        switch (totem.QualifiedItemId)
+        {
+            case "(O)688": return Game1.getFarm();
+            case "(O)689": return Game1.getLocationFromName("mountain");
+            case "(O)690": return Game1.getLocationFromName("beach");
+            case "(O)261": return Game1.getLocationFromName("desert");
+            case "(O)886": return Game1.getLocationFromName("islandsouth");
+        }
+
+        GameLocation? location = null;
+        if (totem.modData.TryGetValue("NermNermNerm.Warpinator.Target", out string targetValue))
+        {
+            location = Game1.getLocationFromName(targetValue);
+            if (location is null)
+            {
+                this.mod.LogErrorOnce($"The author of the mod that inserted {totem.QualifiedItemId} set NermNermNerm.Warpinator.Target, but the value, '{targetValue}', doesn't seem to be a location name.");
+            }
+        }
+
         // The only way to do this that I can figure is to look at the name.
         Match m = WarpMenu.totemNameRegex.Match(totem.Name);
-        GameLocation? location = null;
         if (m.Success)
         {
             string locationName = m.Groups[I("target")].Value;

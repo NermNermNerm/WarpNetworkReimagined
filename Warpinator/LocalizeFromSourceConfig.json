@@ -19,6 +19,7 @@
     "invariantMethods": [
         "System.Text.RegularExpressions.Regex.ctor",
         "StardewValley.Farmer.getFriendshipHeartLevelForNPC",
-        "StardewValley.Game1.playSound"
+        "StardewValley.Game1.playSound",
+        "StardewValley.Game1.getLocationFromName"
     ]
 }
