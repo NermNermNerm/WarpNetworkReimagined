@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NermNermNerm.Warpinator;
 using StardewValley;
-using StardewValley.Buildings;
 using StardewValley.Menus;
-using StardewValley.TokenizableStrings;
-using xTile.Dimensions;
 using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 // ADAPTED FROM:  https://github.com/tlitookilakin/WarpNetwork/blob/master/WarpNetwork/ui/WarpMenu.cs
 
-namespace Warpinator;
+namespace NermNermNerm.Warpinator;
 
 class WarpMenu : IClickableMenu
 {

@@ -1,6 +1,4 @@
-using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
 using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 namespace NermNermNerm.Warpinator;

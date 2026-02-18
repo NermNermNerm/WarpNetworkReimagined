@@ -1,20 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.GameData.Objects;
 using StardewValley.GameData.Tools;
-using Warpinator;
 using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 namespace NermNermNerm.Warpinator;
@@ -40,6 +30,7 @@ public class ModEntry
     public readonly TotemInventory TotemInventory = new();
     public readonly CraftedTotemMultiplier CraftedTotemMultiplier = new();
     public readonly HomeSpot HomeSpot = new();
+    public readonly SlowWarp SlowWarp = new();
 
     public ModEntry() { }
 
@@ -63,6 +54,7 @@ public class ModEntry
         this.TotemInventory.Entry(this);
         this.CraftedTotemMultiplier.Entry(this);
         this.HomeSpot.Entry(this);
+        this.SlowWarp.Entry(this);
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)

@@ -3,11 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 // ADAPTED FROM: https://github.com/tlitookilakin/WarpNetwork/blob/master/WarpNetwork/ui/WarpButton.cs
 
-namespace Warpinator;
+namespace NermNermNerm.Warpinator;
 
 class WarpButton : ClickableComponent
 {

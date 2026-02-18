@@ -1,7 +1,5 @@
-using Microsoft.Xna.Framework;
 using SpecialPowerUtilities;
 using StardewModdingAPI.Events;
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 namespace NermNermNerm.Warpinator;
 
