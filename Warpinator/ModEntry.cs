@@ -153,16 +153,6 @@ public class ModEntry
 
     public void UseWandWithMenu()
     {
-        var totems = this.TotemInventory.GetTotemInventory();
-        if (!totems.Any(t => t.QualifiedItemId == I("(O)688")))
-        {
-            var warpTotemFarm = ItemRegistry.Create<StardewValley.Object>("(O)688");
-            warpTotemFarm.Stack = 0; // Because you can't actually do this with Create
-            totems.Add(warpTotemFarm);
-        }
-
-        totems.Sort((left, right) => string.Compare(left.DisplayName, right.DisplayName, StringComparison.CurrentCulture));
-        Game1.activeClickableMenu = new WarpMenu(this, totems);
+        Game1.activeClickableMenu = new WarpMenu(this);
     }
-
 }

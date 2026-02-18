@@ -16,17 +16,17 @@ class WarpButton : ClickableComponent
 	public readonly int index = 0;
 	private static readonly Rectangle bg = new(384, 396, 15, 15);
 
-    private WarpMenu.Destination destination;
+    private WarpDestination destination;
 
-    public WarpMenu.Destination Destination => this.destination;
+    public WarpDestination WarpDestination => this.destination;
 
-	public WarpButton(Rectangle bounds, WarpMenu.Destination destination, int index) : base(bounds, "")
+	public WarpButton(Rectangle bounds, WarpDestination warpDestination, int index) : base(bounds, "")
 	{
 		this.index = index;
-        this.destination = destination;
+        this.destination = warpDestination;
     }
 
-	public void changeTotem(WarpMenu.Destination totem)
+	public void changeTotem(WarpDestination totem)
     {
         this.destination = totem;
 	}
@@ -46,15 +46,7 @@ class WarpButton : ClickableComponent
             this.wasHovered = false;
 		}
 		IClickableMenu.drawTextureBox(b, Game1.mouseCursors, WarpButton.bg, this.bounds.X, this.bounds.Y, this.bounds.Width, this.bounds.Height, this.tint, this.scale, false);
-        // TODO: Maybe draw the warp totem?
-		// b.Draw(this.texture, new Rectangle(this.bounds.X + 12, this.bounds.Y + 12, this.bounds.Height - 24, this.bounds.Height - 24), Color.White);
-        string text = (this.destination.target is null)
-            ? IF($"{this.destination.totem!.DisplayName} ({this.destination.totem.Stack})")
-            : (this.destination.obeliskWarpCode is not null
-                ? LF($"{this.destination.target.DisplayName} via obelisk")
-                : (this.destination.totem is null
-                    ? LF($"{this.destination.target.DisplayName} via slow-warp")
-                    : LF($"{this.destination.target.DisplayName} via totem ({this.destination.totem!.Stack})")));
+        string text = this.destination.ButtonTitle;
         var textSize = Game1.dialogueFont.MeasureString(text);
 
 		Utility.drawTextWithShadow(b, text, Game1.dialogueFont, new Vector2(this.bounds.X + this.bounds.Height - 9, MathF.Round(this.bounds.Y - textSize.Y / 2f + this.bounds.Height / 2f + 6)), Game1.textColor);
