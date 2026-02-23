@@ -1,6 +1,3 @@
-using StardewModdingAPI.Events;
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
-
 namespace NermNermNerm.Warpinator;
 
 public class ModConfigMenu

@@ -1,5 +1,3 @@
-using StardewModdingAPI;
-
 namespace NermNermNerm.Warpinator;
 
 public class ModLet : ISimpleLog

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StardewValley;
-using StardewValley.Menus;
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
-
+﻿
 // ADAPTED FROM:  https://github.com/tlitookilakin/WarpNetwork/blob/master/WarpNetwork/ui/WarpMenu.cs
 
 namespace NermNermNerm.Warpinator;

@@ -1,7 +1,4 @@
-using System;
-using Microsoft.Xna.Framework;
-
-namespace SpecialPowerUtilities;
+namespace NermNermNerm.Warpinator;
 
 public interface ISpecialPowerAPI
 {
@@ -14,8 +11,6 @@ public interface ISpecialPowerAPI
     /// <para>True if the power category was successfully registered, false if the power category was not successfully registered for some reason.</para>
     /// </returns>
     bool RegisterPowerCategory(string uniqueID, Func<string> displayName, string iconTexture);
-
-
 
     /// <summary>Register the data for a power category for a specific mod to be used in the Powers menu display.</summary>
     /// <param name="uniqueID">The unique ID of the mod (typically yours) from the manifest.</param>

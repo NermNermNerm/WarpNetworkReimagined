@@ -1,15 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using HarmonyLib;
-using Microsoft.Xna.Framework;
-using StardewModdingAPI.Events;
-using StardewValley;
-using StardewValley.GameData.Objects;
-using StardewValley.Locations;
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
-
 namespace NermNermNerm.Warpinator;
 
 public class HomeSpot : ModLet

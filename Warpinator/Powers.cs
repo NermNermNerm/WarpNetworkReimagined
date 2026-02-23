@@ -1,6 +1,3 @@
-using SpecialPowerUtilities;
-using StardewModdingAPI.Events;
-
 namespace NermNermNerm.Warpinator;
 
 public class Powers

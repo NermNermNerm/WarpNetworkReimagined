@@ -1,12 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using NermNermNerm.Warpinator;
-using StardewValley;
-using StardewValley.TokenizableStrings;
 using xTile.Dimensions;
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
 
 namespace NermNermNerm.Warpinator;
 

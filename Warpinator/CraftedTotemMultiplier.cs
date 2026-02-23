@@ -1,11 +1,3 @@
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using StardewModdingAPI.Events;
-using StardewValley;
-
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
-
 namespace NermNermNerm.Warpinator;
 
 /// <summary>

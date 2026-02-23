@@ -1,7 +1,3 @@
-using System;
-using NermNermNerm.Stardew.LocalizeFromSource;
-using StardewModdingAPI;
-
 /// <summary>
 ///   Objects within a mod should implement this interface to make it easier to report events to the
 ///   log file or whereever.  It only has one function in it, to make it easy to write classes that

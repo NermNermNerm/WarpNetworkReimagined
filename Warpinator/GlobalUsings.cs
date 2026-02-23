@@ -1,0 +1,22 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Globalization;
+global using System.Linq;
+global using System.Reflection;
+global using System.Text.RegularExpressions;
+global using HarmonyLib;
+global using Microsoft.Xna.Framework;
+global using Microsoft.Xna.Framework.Graphics;
+global using NermNermNerm.Stardew.LocalizeFromSource;
+global using StardewModdingAPI;
+global using StardewModdingAPI.Events;
+global using StardewValley;
+global using StardewValley.GameData.Objects;
+global using StardewValley.GameData.Tools;
+global using StardewValley.Locations;
+global using StardewValley.Menus;
+global using StardewValley.TokenizableStrings;
+global using StardewValley.Tools;
+
+global using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
+global using SObject = StardewValley.Object;

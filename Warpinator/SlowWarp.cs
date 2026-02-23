@@ -1,9 +1,3 @@
-using System;
-using Microsoft.Xna.Framework;
-using StardewValley;
-
-using static NermNermNerm.Stardew.LocalizeFromSource.SdvLocalize;
-
 namespace NermNermNerm.Warpinator;
 
 /// <summary>

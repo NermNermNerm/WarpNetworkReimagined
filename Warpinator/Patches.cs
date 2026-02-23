@@ -1,8 +1,3 @@
-using StardewValley;
-using StardewValley.Tools;
-
-using SObject = StardewValley.Object;
-
 namespace NermNermNerm.Warpinator;
 
 internal static class Patches

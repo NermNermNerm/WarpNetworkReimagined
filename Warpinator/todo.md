@@ -8,6 +8,7 @@
       home for the night...  Do both run off the clock?).  Perhaps a choice of two settings
       would be the way "Ban slow-warp" and "Slow warp for free".  If you go for slow warp for
       free, then it'd be like having the obs for mountain and beach and farm.
+- [ ] Bug - the totem multiplier thing applies to treasure totems (and it shouldn't).
 - [x] Using a totem should reduce the count of items.
 - [x] Warps to the farm should go to the house (? maybe a config?)  How about an item that you can buy
       that, on-use, sets the destination.  Perhaps constrain it to the farm to prevent abuse and give
@@ -22,4 +23,6 @@
 - [x] Consider a config that makes 1 totem count as 2 or more.  Perhaps make it also just apply to totems in the valley.
       Perhaps make it change the totem recipes to double the yield
 - [ ] Add a really expensive item that makes it like there's an obilisk at the farm.
-- [x] Warp totems should only be added to the marionberry if it's in your inventory
+- [x] Warp totems should only be added to the marionberry if it's in your inventory.
+- [ ] BUG: Warped to beach at 12:40 on luau day, got a message saying "you can't warp there now, the festival is
+      being set up", but it warped there anyway and everything was fine.
