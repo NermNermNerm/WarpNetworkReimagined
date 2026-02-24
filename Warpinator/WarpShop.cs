@@ -1,3 +1,5 @@
+using xTile.Layers;
+using xTile.ObjectModel;
 using xTile.Tiles;
 
 namespace NermNermNerm.Warpinator;
@@ -16,13 +18,15 @@ public class WarpShop  : ModLet
     {
         var mountain = Game1.getLocationFromName("Mountain");
         var buildingsLayer = mountain.Map.GetLayer(I("Buildings"));
+        var frontLayer = mountain.Map.GetLayer(I("Front"));
+        var backLayer = mountain.Map.GetLayer(I("Back"));
 
 // Load your texture
         Texture2D tex = this.Mod.Helper.ModContent.Load<Texture2D>("assets/tollbooth.png");
 
 // Create a tilesheet
         TileSheet sheet = new TileSheet(
-            id: "NorvinSheet",          // the name you will reference later
+            id: "NorvinSheet",
             map: mountain.Map,
             imageSource: this.Mod.Helper.ModContent.GetInternalAssetName("assets/tollbooth.png").BaseName,
             sheetSize: new xTile.Dimensions.Size(tex.Width / 16, tex.Height / 16),
@@ -38,11 +42,45 @@ public class WarpShop  : ModLet
         int x = 84;
         int y = 20;
         int tileIndex = 0;
-        for (int dy = 0; dy < 80 / 16; ++dy) // The png is 80px wide
+        for (int dy = 0; dy < 80 / 16; ++dy) // The png is 80px tall
         {
-            for (int dx = 0; dx < 64 / 16; ++dx) // and 64px tall.
+            for (int dx = 0; dx < 64 / 16; ++dx) // and 64px wide.
             {
-                buildingsLayer.Tiles[x+dx, y+dy] = new StaticTile(buildingsLayer, sheet, BlendMode.Alpha, tileIndex++);
+                // Clear any existing stuff.
+                Vector2 xy = new Vector2(x + dx, y + dy);
+                // Remove terrain features (trees, bushes, grass, hoe dirt, etc.)
+                mountain.terrainFeatures.Remove(xy);
+
+                // Remove objects (seeds, debris, placed items)
+                mountain.objects.Remove(xy);
+
+                // Remove large terrain features (stumps, logs, boulders)
+                for (int i = mountain.largeTerrainFeatures.Count - 1; i >= 0; i--)
+                {
+                    var ltf = mountain.largeTerrainFeatures[i];
+
+                    if (ltf.getBoundingBox().Intersects(new Rectangle((x + dx) * 64, (y + dy) * 64, 64, 64)))
+                        mountain.largeTerrainFeatures.RemoveAt(i);
+                }
+
+                // Prevent future tree growth.
+                var backTile = backLayer.Tiles[x + dx, y + dy];
+                if (backTile is null)
+                {
+                    var backTileSheet = mountain.Map.GetTileSheet("spring_outdoorsTileSheet") ?? mountain.Map.TileSheets.First();
+                    backTile = new StaticTile( backLayer, backTileSheet, BlendMode.Alpha, 0 /* doesn't matter */);
+                    backLayer.Tiles[x, y] = backTile;
+                }
+                backTile.Properties[I("Diggable")] = new xTile.ObjectModel.PropertyValue(I("F"));
+                // backTile.Properties[I("Passable")] = new xTile.ObjectModel.PropertyValue(dy <= 2 ? I("T") : I("F"));
+
+                // if (dy < 3)
+                // {
+                //     sheet.TileIndexProperties[tileIndex][I("Passable")] = new PropertyValue(I("T"));
+                // } // else it defaults to impassable
+
+                (dy < 3 ? frontLayer : buildingsLayer).Tiles[x+dx, y+dy] = new StaticTile(buildingsLayer, sheet, BlendMode.Alpha, tileIndex++);
+                // buildingsLayer.Tiles[x+dx, y+dy].Properties[I("Passable")] = new xTile.ObjectModel.PropertyValue(dy <= 2 ? I("T") : I("F"));
             }
         }
 
