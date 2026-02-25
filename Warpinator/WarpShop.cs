@@ -6,15 +6,7 @@ namespace NermNermNerm.Warpinator;
 
 public class WarpShop  : ModLet
 {
-    private static readonly Vector2 boothTile = new Vector2(84, 20);
-    public override void Entry(ModEntry mod)
-    {
-        base.Entry(mod);
-
-        mod.Helper.Events.GameLoop.DayStarted += this.GameLoopOnDayStarted;
-
-        mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
-    }
+    private const string OpenShopTileAction = "OpenNorvinsShop";
 
     private int proximityCounter = 0;
     // private int facingCounter = 0;
@@ -52,9 +44,38 @@ public class WarpShop  : ModLet
 
     private StaticTile[]? tiles = null;
 
-    private BoothAnimationFrame nowShowingFrame = BoothAnimationFrame.Empty;
+    private BoothAnimationFrame currentAnimationFrame = BoothAnimationFrame.Empty;
 
-    private bool IsNorvinPresent => this.nowShowingFrame >= BoothAnimationFrame.Present;
+    private bool IsNorvinPresent => this.currentAnimationFrame >= BoothAnimationFrame.Present;
+
+    public override void Entry(ModEntry mod)
+    {
+        base.Entry(mod);
+
+        mod.Helper.Events.GameLoop.DayStarted += this.GameLoopOnDayStarted;
+        mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
+
+        GameLocation.RegisterTileAction(WarpShop.OpenShopTileAction, this.OpenNorvinShop);
+    }
+
+    private bool OpenNorvinShop(GameLocation _, string[] _1, Farmer farmer, Point _2)
+    {
+        var stock = new Dictionary<ISalable, ItemStockInformation> {
+            {
+                new StardewValley.Object("388", 1),
+                new ItemStockInformation(10, 1)
+            }, // Wood
+            {
+                new StardewValley.Object("390", 1),
+                new ItemStockInformation(50, 10)
+            } // Stone
+        };
+
+        Game1.playSound("clank");
+        // Open shop
+        // Game1.activeClickableMenu = new ShopMenu("Dwarf", stock);
+        return true; // handled
+    }
 
     private void SetBoothFrame(BoothAnimationFrame newFrame)
     {
@@ -72,17 +93,16 @@ public class WarpShop  : ModLet
                 int tileIndex = (int)newFrame * WarpShop.BoothWidthInTiles + dx
                         + dy * (WarpShop.NumAnimationFrames * WarpShop.BoothWidthInTiles); // dy*tiles-per-row
 
-                (dy < 3 ? frontLayer : buildingsLayer).Tiles[x, y] =
-                    new StaticTile(buildingsLayer, sheet, BlendMode.Alpha, tileIndex);
+                (dy < 3 ? frontLayer : buildingsLayer).Tiles[x, y] = this.tiles![tileIndex];
             }
         }
 
-        this.nowShowingFrame = newFrame;
+        this.currentAnimationFrame = newFrame;
     }
 
     void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (!Game1.hasLoadedGame)
+        if (!Context.IsWorldReady || Game1.eventUp || Game1.paused)
         {
             return;
         }
@@ -90,38 +110,55 @@ public class WarpShop  : ModLet
         var mountain = Game1.getLocationFromName("Mountain");
 
         // 1) Proximity check (once per second)
-        if (++this.proximityCounter >= 60)
+        if (++this.proximityCounter >= 60  && this.boothAnimations.Count == 0)
         {
             this.proximityCounter = 0;
 
-            var nearestFarmer = Utility.isThereAFarmerWithinDistance(boothTile, 7, mountain);
-
-            if (nearestFarmer is not null && !this.IsNorvinPresent && this.boothAnimations.Count == 0)
+            if (this.IsNorvinPresent)
             {
-                this.boothAnimations.AddRange([
-                    new BoothAnimation(BoothAnimationFrame.Poof1, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof2, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof3, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof4, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof5, 5),
-                    new BoothAnimation(BoothAnimationFrame.Present, 1),
+                // Norvin leaves when the players are > 20 tiles away
+                var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 30, mountain);
+                if (nearestFarmer is null)
+                {
+                    this.boothAnimations.AddRange([
+                        new BoothAnimation(BoothAnimationFrame.Poof5, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof4, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof3, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof2, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof1, 5),
+                        new BoothAnimation(BoothAnimationFrame.Empty, 1),
                     ]);
-                mountain.playSound("wand");
+                    mountain.playSound("wand");
+                }
             }
-            else if (nearestFarmer is null && this.IsNorvinPresent && this.boothAnimations.Count == 0)
+            else
             {
-                this.boothAnimations.AddRange([
-                    new BoothAnimation(BoothAnimationFrame.Poof5, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof4, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof3, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof2, 5),
-                    new BoothAnimation(BoothAnimationFrame.Poof1, 5),
-                    new BoothAnimation(BoothAnimationFrame.Empty, 1),
-                ]);
-                mountain.playSound("wand");
+                // Norvin appears when the players are < 12 tiles away
+                var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 12, mountain);
+
+                if (nearestFarmer is not null)
+                {
+                    this.boothAnimations.AddRange([
+                        new BoothAnimation(BoothAnimationFrame.Poof1, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof2, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof3, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof4, 5),
+                        new BoothAnimation(BoothAnimationFrame.Poof5, 5),
+                        new BoothAnimation(BoothAnimationFrame.Present, 1),
+                    ]);
+                    mountain.playSound("wand");
+                }
             }
         }
 
+        if (Game1.random.Next(60 * 5) == 0 && this.boothAnimations.Count == 0 && this.IsNorvinPresent)
+        {
+            // Blink about every 5 seconds
+            this.boothAnimations.AddRange([
+                new BoothAnimation(BoothAnimationFrame.Blink, 20),
+                new BoothAnimation(this.currentAnimationFrame, 20),
+                ]);
+        }
 
         // 2) Facing the nearest player (every 10 ticks)
         // if (this.norvinPresent && ++this.facingCounter >= 10)
@@ -142,9 +179,10 @@ public class WarpShop  : ModLet
         {
             ++this.idleCounter;
             var currentAnimation = this.boothAnimations.First();
-            if (this.nowShowingFrame != currentAnimation.AnimationFrame)
+            if (this.currentAnimationFrame != currentAnimation.AnimationFrame)
             {
                 this.SetBoothFrame(currentAnimation.AnimationFrame);
+                this.idleCounter = 0;
             }
             else if (this.idleCounter >= currentAnimation.NumTicks)
             {
@@ -192,7 +230,19 @@ public class WarpShop  : ModLet
             this.tiles = new StaticTile[numTiles];
             for (int i = 0; i < texture.Height / 16 * texture.Width / 16; ++i)
             {
-                this.tiles[i] = new StaticTile(buildingsLayer, sheet, BlendMode.Alpha, i++);
+                this.tiles[i] = new StaticTile(buildingsLayer, sheet, BlendMode.Alpha, i);
+            }
+
+            for (int index = 0; index < WarpShop.NumAnimationFrames; ++index)
+            {
+                for (int x = 1; x <= 2; ++x)
+                {
+                    int y = 4;
+                    var tile = this.tiles[
+                        x + index * WarpShop.BoothWidthInTiles +
+                        y * WarpShop.BoothWidthInTiles * WarpShop.NumAnimationFrames];
+                    tile.Properties[I("Action")] = WarpShop.OpenShopTileAction;
+                }
             }
         }
 
