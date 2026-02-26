@@ -1,3 +1,4 @@
+using StardewValley.GameData.Shops;
 using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
@@ -6,6 +7,7 @@ namespace NermNermNerm.Warpinator;
 
 public class WarpShop  : ModLet
 {
+    private const string NorvinsShopId = "Warpinator-Norvin";
     private const string OpenShopTileAction = "OpenNorvinsShop";
 
     private int proximityCounter = 0;
@@ -54,27 +56,81 @@ public class WarpShop  : ModLet
 
         mod.Helper.Events.GameLoop.DayStarted += this.GameLoopOnDayStarted;
         mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
+        mod.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
 
         GameLocation.RegisterTileAction(WarpShop.OpenShopTileAction, this.OpenNorvinShop);
+    }
+
+    private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
+    {
+        if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops"))
+        {
+            e.Edit(editor =>
+            {
+                this.EditShopAssets(editor.AsDictionary<string, ShopData>().Data);
+            });
+        }
+    }
+
+    private void EditShopAssets(IDictionary<string, ShopData> data)
+    {
+        data[I(WarpShop.NorvinsShopId)] = new ShopData()
+        {
+
+        };
     }
 
     private bool OpenNorvinShop(GameLocation _, string[] _1, Farmer farmer, Point _2)
     {
         var stock = new Dictionary<ISalable, ItemStockInformation> {
             {
-                new StardewValley.Object("388", 1),
-                new ItemStockInformation(10, 1)
-            }, // Wood
+                new StardewValley.Object(ModEntry.TollReceiptObjectId, 1),
+                new ItemStockInformation(100, 100)
+            },
             {
-                new StardewValley.Object("390", 1),
+                ItemRegistry.Create(ModEntry.MarionBerryToolQiid),
+                new ItemStockInformation(1000, 1)
+            },
+            {
+                new StardewValley.Object(HomeSpot.HomeSpotObjectId, 1),
                 new ItemStockInformation(50, 10)
-            } // Stone
+            },
+            {
+                new StardewValley.Object(ModEntry.OtherPlacesUpgradeObjectId, 1),
+                new ItemStockInformation(5000, 1)
+            },
+            {
+                new StardewValley.Object(ModEntry.FasterWarpObjectId, 1),
+                new ItemStockInformation(25000, 1)
+            },
+            {
+                new StardewValley.Object(ModEntry.TotemWalletUpgradeObjectId, 1),
+                new ItemStockInformation(20000, 1)
+            },
+            {
+                new StardewValley.Object(ModEntry.ObeliskIntegrationObjectId, 1),
+                new ItemStockInformation(900000, 1)
+            },
+            {
+                new StardewValley.Object(ModEntry.ReturnUpgradeObjectId, 1),
+                new ItemStockInformation(1000000, 1)
+            },
         };
 
-        Game1.playSound("clank");
-        // Open shop
-        // Game1.activeClickableMenu = new ShopMenu("Dwarf", stock);
+        // Game1.playSound("clank");
+
+        var menu = new ShopMenu(I(WarpShop.NorvinsShopId), stock);
+        menu.portraitTexture = this.Mod.Helper.ModContent.Load<Texture2D>(I("assets/norvin-portrait.png"));
+        menu.potraitPersonDialogue = L("Howyadoin?  Higgerdy biggerdy flibberty floo I got a lot to say.  Oh yeah, lots.  Much, much more than that.  Yep.");
+        menu.onPurchase = this.OnPurchase;
+
+        Game1.activeClickableMenu = menu;
         return true; // handled
+    }
+
+    private bool OnPurchase(ISalable salable, Farmer who, int countTaken, ItemStockInformation stock)
+    {
+        return false;
     }
 
     private void SetBoothFrame(BoothAnimationFrame newFrame)

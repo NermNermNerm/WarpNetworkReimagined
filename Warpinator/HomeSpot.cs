@@ -3,7 +3,7 @@ namespace NermNermNerm.Warpinator;
 public class HomeSpot : ModLet
 {
     public const string HomeSpotObjectId = "NermNermNerm.Warpinator.HomeSpot";
-    public const int HomeSpotPrice = 5000; // in gold
+    public const int HomeSpotPrice = 100; // in gold
 
     private const string HomeLocationModDataKey = "NermNermNerm.Warpinator.HomeSpot";
 
@@ -224,7 +224,7 @@ public class HomeSpot : ModLet
             Category = 0, // again, same as rain totem.
             Price = HomeSpot.HomeSpotPrice, // todo: normalize this and make sure it shows up as this price in the shop.
             Texture = ModEntry.OneTileSpritesPseudoPath,
-            SpriteIndex = 6, // the green chip
+            SpriteIndex = 0,
             ContextTags = ["not_giftable", "not_placeable", "prevent_loss_on_death"],
         };
     }

@@ -5,9 +5,22 @@ public class ModEntry
 {
     public const string MarionBerryToolId = "NermNermNerm.Warpinator.MarionBerry";
     public const string MarionBerryToolQiid = ItemRegistry.type_tool + ModEntry.MarionBerryToolId;
+    public const string TollReceiptObjectId = "NermNermNerm.Warpinator.TollReceipt";
+    public const string TollReceiptObjectQiid = ItemRegistry.type_object + ModEntry.TollReceiptObjectId;
+    public const string FasterWarpObjectId = "NermNermNerm.Warpinator.FasterWarp";
+    public const string FasterWarpObjectQiid = ItemRegistry.type_object + ModEntry.FasterWarpObjectId;
+    public const string OtherPlacesUpgradeObjectId = "NermNermNerm.Warpinator.OtherPlacesUpgrade";
+    public const string OtherPlacesUpgradeObjectQiid = ItemRegistry.type_object + ModEntry.OtherPlacesUpgradeObjectId;
+    public const string TotemWalletUpgradeObjectId = "NermNermNerm.Warpinator.TotemWalletUpgrade";
+    public const string TotemWalletUpgradeObjectQiid = ItemRegistry.type_object + ModEntry.TotemWalletUpgradeObjectId;
+    public const string ObeliskIntegrationObjectId = "NermNermNerm.Warpinator.ObeliskIntegration";
+    public const string ObeliskIntegrationObjectQiid = ItemRegistry.type_object + ModEntry.ObeliskIntegrationObjectId;
+    public const string ReturnUpgradeObjectId = "NermNermNerm.Warpinator.ReturnUpgrade";
+    public const string ReturnUpgradeObjectQiid = ItemRegistry.type_object + ModEntry.ReturnUpgradeObjectId;
 
     public const string TwoTileSpritesPseudoPath = "Mods/NermNermNerm/Warpinator/Sprites";
     public const string OneTileSpritesPseudoPath = "Mods/NermNermNerm/Warpinator/1x1Sprites";
+    public const string PortraitsPseudoPath = "Mods/NermNermNerm/Warpinator/Portraits";
 
     public readonly Powers Powers = new Powers();
 
@@ -56,11 +69,22 @@ public class ModEntry
         {
             e.LoadFromModFile<Texture2D>("assets/1x1_Sprites.png", AssetLoadPriority.Exclusive);
         }
+        else if (e.NameWithoutLocale.IsEquivalentTo(ModEntry.PortraitsPseudoPath))
+        {
+            e.LoadFromModFile<Texture2D>("assets/portraits.png", AssetLoadPriority.Exclusive);
+        }
         else if (e.NameWithoutLocale.IsEquivalentTo("Data/Tools"))
         {
             e.Edit(editor =>
             {
                 EditToolAssets(editor.AsDictionary<string, ToolData>().Data);
+            });
+        }
+        else if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
+        {
+            e.Edit(editor =>
+            {
+                EditObjectAssets(editor.AsDictionary<string, ObjectData>().Data);
             });
         }
         else if (e.NameWithoutLocale.IsEquivalentTo(TwoTileSpritesPseudoPath))
@@ -78,7 +102,7 @@ public class ModEntry
     }
 
 
-    internal static void EditToolAssets(IDictionary<string, ToolData> data)
+    private static void EditToolAssets(IDictionary<string, ToolData> data)
     {
         data[ModEntry.MarionBerryToolId] = new ToolData
         {
@@ -98,6 +122,59 @@ public class ModEntry
             SetProperties = null,
         };
     }
+
+    private static void EditObjectAssets(IDictionary<string, ObjectData> data)
+    {
+        data[ModEntry.TollReceiptObjectId] = new ObjectData()
+        {
+            Name = I("Toll Receipt"),
+            DisplayName = L("Toll Receipt"),
+            Description = L("Proof that you paid your toll.  Good for one day only."),
+            Texture = ModEntry.OneTileSpritesPseudoPath,
+            SpriteIndex = 1,
+        };
+        data[ModEntry.FasterWarpObjectId] = new ObjectData()
+        {
+            Name = I("Faster Warp Chip"),
+            DisplayName = L("Faster Warp Marionberry Chip"),
+            Description = L("Halves the time 'slow-warp' takes.  Slots into your Marionberry when added to your inventory."),
+            Texture = ModEntry.OneTileSpritesPseudoPath,
+            SpriteIndex = 2,
+        };
+        data[ModEntry.OtherPlacesUpgradeObjectId] = new ObjectData()
+        {
+            Name = I("Beach and Mountain Chip"),
+            DisplayName = L("Valley Slow-Warp Chip"),
+            Description = L("Allows slow-warp to locations around the valley that have a warp shrine.  Slots into your Marionberry when added to your inventory."),
+            Texture = ModEntry.OneTileSpritesPseudoPath,
+            SpriteIndex = 3,
+        };
+        data[ModEntry.TotemWalletUpgradeObjectId] = new ObjectData()
+        {
+            Name = I("Totem Wallet Chip"),
+            DisplayName = L("Totem Wallet Chip"),
+            Description = L("Caches all warp totems into your Marionberry wallet.  Slots into your Marionberry when added to your inventory."),
+            Texture = ModEntry.OneTileSpritesPseudoPath,
+            SpriteIndex = 4,
+        };
+        data[ModEntry.ObeliskIntegrationObjectId] = new ObjectData()
+        {
+            Name = I("Obelisk Integration Chip"),
+            DisplayName = L("Obelisk Integration Chip"),
+            Description = L("Allows instantaneous warping to any location to which you've built an obelisk to and your farm.  Slots into your Marionberry when added to your inventory."),
+            Texture = ModEntry.OneTileSpritesPseudoPath,
+            SpriteIndex = 5,
+        };
+        data[ModEntry.ReturnUpgradeObjectId] = new ObjectData()
+        {
+            Name = I("Return To Last Warp Chip"),
+            DisplayName = L("Return Last Warp Chip"),
+            Description = L("Warping back to the last location you warped from.  Slots into your Marionberry when added to your inventory."),
+            Texture = ModEntry.OneTileSpritesPseudoPath,
+            SpriteIndex = 6,
+        };
+    }
+
 
     public void WriteToLog(string message, LogLevel level, bool isOnceOnly)
     {
