@@ -28,9 +28,19 @@ public class ModConfigMenu
         configMenu.AddNumberOption(
             mod: this.mod.ModManifest,
             name: () => L("Slow-Warp cost:"),
-            getValue: () => ModEntry.Config.WarpHomeTimeCost,
-            setValue: value => ModEntry.Config.WarpHomeTimeCost = value,
-            tooltip: () => L("The number of 10-minute intervals that spin by when using the initial version of the tool - e.g. 3 would make warping home take 30 minutes."),
+            getValue: () => ModEntry.Config.SlowWarpTimeCost,
+            setValue: value => ModEntry.Config.SlowWarpTimeCost = value,
+            tooltip: () => L("The number of 10-minute intervals that spin by when using the totemless 'slow-warp' mode.   6 would make warping home take 60 minutes."),
+            min: 0,
+            max: 6
+        );
+
+        configMenu.AddNumberOption(
+            mod: this.mod.ModManifest,
+            name: () => L("Faster Slow-Warp cost:"),
+            getValue: () => ModEntry.Config.FastWarpTimeCost,
+            setValue: value => ModEntry.Config.FastWarpTimeCost = value,
+            tooltip: () => L("The number of 10-minute intervals that spin by when using the 'slow-warp' mode after purchasing the upgrade.  3 would make warping home take 30 minutes."),
             min: 0,
             max: 6
         );
@@ -46,7 +56,7 @@ public class ModConfigMenu
             },
             tooltip: () => L("Modifies all totem crafting recipes to produce this many totems - e.g. 2 would double the number of totems you get per craft."),
             min: 1,
-            max: 3
+            max: 5
         );
     }
 }

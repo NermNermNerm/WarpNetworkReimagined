@@ -50,7 +50,7 @@ public class WarpDestination
         List<WarpDestination> destinations = new();
 
         List<string> obeliskLocationNames = new();
-        if (ModEntry.Instance.IsObeliskUseEnabled)
+        if (ModEntry.Instance.Marionberry.HasObeliskIntegration)
         {
             // This is pretty much a fallback, in case the user hasn't set a warp spot for the farm.
             var frontDoorSpot = Utility.getHomeOfFarmer(Game1.player).getFrontDoorSpot();
@@ -215,7 +215,8 @@ public class WarpDestination
             // ^ That returns a bool - maybe we could log it?  not sure that'd be really helpful diagnostic.
         }
         else if (this.Target is not null) { // This condition should be guaranteed true, but this lets the static analysis know.
-            int numMinutesToPass = Game1.IsMultiplayer ? 0 :  ModEntry.Config.WarpHomeTimeCost * 10;
+            int numMinutesToPass = 10 * (Game1.IsMultiplayer
+                ? 0 :  ModEntry.Instance.Marionberry.HasFasterWarpPower ? ModEntry.Config.FastWarpTimeCost : ModEntry.Config.SlowWarpTimeCost);
             int newTime = -1;
             if (numMinutesToPass > 0)
             {

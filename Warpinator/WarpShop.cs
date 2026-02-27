@@ -57,8 +57,32 @@ public class WarpShop  : ModLet
         mod.Helper.Events.GameLoop.DayStarted += this.GameLoopOnDayStarted;
         mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
         mod.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
+        mod.Helper.Events.GameLoop.DayEnding += OnDayEnding;
 
         GameLocation.RegisterTileAction(WarpShop.OpenShopTileAction, this.OpenNorvinShop);
+    }
+
+    private bool HasPaidToll
+    {
+        get => Game1.player.modData.ContainsKey("Warpinator.HasPaidToll");
+        set
+        {
+            if (value)
+            {
+                Game1.player.modData["Warpinator.HasPaidToll"] = I("T");
+            }
+            else
+            {
+                Game1.player.modData.Remove("Warpinator.HasPaidToll");
+            }
+        }
+    }
+
+    private void OnDayEnding(object? sender, DayEndingEventArgs e)
+    {
+        this.HasPaidToll = false;
+        // Shouldn't be possible to get more than one of these, so we can take the easy way out.
+        Game1.player.Items.ReduceId(ModEntry.TollReceiptObjectId, 1);
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
@@ -76,53 +100,65 @@ public class WarpShop  : ModLet
     {
         data[I(WarpShop.NorvinsShopId)] = new ShopData()
         {
-
         };
     }
 
     private bool OpenNorvinShop(GameLocation _, string[] _1, Farmer farmer, Point _2)
     {
-        var stock = new Dictionary<ISalable, ItemStockInformation> {
+        var stock = new Dictionary<ISalable, ItemStockInformation>();
+
+        void addStock(string itemQiid, int price, int quantity = 1)
+        {
+            stock[ItemRegistry.Create(itemQiid)] = new ItemStockInformation(price, quantity);
+        }
+
+        if (!this.HasPaidToll)
+        {
+            addStock(ModEntry.TollReceiptObjectId, 100);
+        }
+
+        if (Game1.player.Items.Any(i => i.QualifiedItemId == ModEntry.MarionBerryToolQiid))
+        {
+            addStock(HomeSpot.HomeSpotObjectId, 50);
+
+            if (!this.Mod.Marionberry.HasOtherWarps)
             {
-                new StardewValley.Object(ModEntry.TollReceiptObjectId, 1),
-                new ItemStockInformation(100, 100)
-            },
+                addStock(ModEntry.OtherPlacesUpgradeObjectQiid, 2000);
+            }
+
+            if (!this.Mod.Marionberry.HasFasterWarpPower)
             {
-                ItemRegistry.Create(ModEntry.MarionBerryToolQiid),
-                new ItemStockInformation(1000, 1)
-            },
+                addStock(ModEntry.FasterWarpObjectQiid, 25000);
+            }
+
+            if (!this.Mod.Marionberry.HasTotemWallet)
             {
-                new StardewValley.Object(HomeSpot.HomeSpotObjectId, 1),
-                new ItemStockInformation(50, 10)
-            },
+                addStock(ModEntry.TotemWalletUpgradeObjectQiid, 20000);
+            }
+
+            if (!this.Mod.Marionberry.HasObeliskIntegration)
             {
-                new StardewValley.Object(ModEntry.OtherPlacesUpgradeObjectId, 1),
-                new ItemStockInformation(5000, 1)
-            },
+                addStock(ModEntry.ObeliskIntegrationObjectQiid, 900000);
+            }
+
+            if (!this.Mod.Marionberry.HasReturn)
             {
-                new StardewValley.Object(ModEntry.FasterWarpObjectId, 1),
-                new ItemStockInformation(25000, 1)
-            },
-            {
-                new StardewValley.Object(ModEntry.TotemWalletUpgradeObjectId, 1),
-                new ItemStockInformation(20000, 1)
-            },
-            {
-                new StardewValley.Object(ModEntry.ObeliskIntegrationObjectId, 1),
-                new ItemStockInformation(900000, 1)
-            },
-            {
-                new StardewValley.Object(ModEntry.ReturnUpgradeObjectId, 1),
-                new ItemStockInformation(1000000, 1)
-            },
-        };
+                addStock(ModEntry.ReturnUpgradeObjectQiid, 1000000);
+            }
+        }
+        else
+        {
+            stock[ItemRegistry.Create(ModEntry.MarionBerryToolQiid)] = new ItemStockInformation(1000, 1);
+        }
 
         // Game1.playSound("clank");
 
-        var menu = new ShopMenu(I(WarpShop.NorvinsShopId), stock);
-        menu.portraitTexture = this.Mod.Helper.ModContent.Load<Texture2D>(I("assets/norvin-portrait.png"));
-        menu.potraitPersonDialogue = L("Howyadoin?  Higgerdy biggerdy flibberty floo I got a lot to say.  Oh yeah, lots.  Much, much more than that.  Yep.");
-        menu.onPurchase = this.OnPurchase;
+        var menu = new ShopMenu(I(WarpShop.NorvinsShopId), stock)
+        {
+            portraitTexture = this.Mod.Helper.ModContent.Load<Texture2D>(SdvLocalize.I("assets/norvin-portrait.png")),
+            potraitPersonDialogue = this.HasPaidToll ? SdvLocalize.L("Want some upgrades?") : SdvLocalize.L("Gonna pay that toll??"),
+            onPurchase = this.OnPurchase
+        };
 
         Game1.activeClickableMenu = menu;
         return true; // handled
@@ -130,6 +166,11 @@ public class WarpShop  : ModLet
 
     private bool OnPurchase(ISalable salable, Farmer who, int countTaken, ItemStockInformation stock)
     {
+        if (salable.QualifiedItemId == ModEntry.TollReceiptObjectQiid)
+        {
+            this.HasPaidToll = true;
+        }
+
         return false;
     }
 
@@ -158,7 +199,7 @@ public class WarpShop  : ModLet
 
     void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (!Context.IsWorldReady || Game1.eventUp || Game1.paused)
+        if (!Game1.hasLoadedGame || !Context.IsWorldReady || Game1.eventUp || Game1.paused)
         {
             return;
         }

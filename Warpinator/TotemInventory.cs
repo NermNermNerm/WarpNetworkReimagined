@@ -13,17 +13,16 @@ public class TotemInventory : ModLet
         mod.Helper.Events.Player.InventoryChanged += this.PlayerOnInventoryChanged;
     }
 
-    private void PlayerOnInventoryChanged(object? sender, InventoryChangedEventArgs eventArgs)
+    public void CheckPlayerInventoryForTotems()
+    {
+        this.CheckForTotems(Game1.player.Items);
+    }
+
+    private void CheckForTotems(IEnumerable<Item> items)
     {
         List<StardewValley.Object>? updatedTotemCounts = null;
 
-        if (!Game1.player.Items.Any(i => i?.QualifiedItemId == ModEntry.MarionBerryToolQiid))
-        {
-            // Player hasn't got a marionberry, so we don't do anything.
-            return;
-        }
-
-        foreach (var newTotem in eventArgs.Added.OfType<StardewValley.Object>().Where(this.IsWarpTotem))
+        foreach (var newTotem in items.OfType<StardewValley.Object>().Where(this.IsWarpTotem).ToArray())
         {
             updatedTotemCounts ??= this.GetTotemInventory();
 
@@ -51,6 +50,17 @@ public class TotemInventory : ModLet
         {
             this.SaveTotemInventory(updatedTotemCounts);
         }
+    }
+
+    private void PlayerOnInventoryChanged(object? sender, InventoryChangedEventArgs eventArgs)
+    {
+        if (!this.Mod.Marionberry.HasTotemWallet || !Game1.player.Items.Any(i => i?.QualifiedItemId == ModEntry.MarionBerryToolQiid))
+        {
+            // Player hasn't got a marionberry or the totem upgrade, so we don't do anything.
+            return;
+        }
+
+        this.CheckForTotems(eventArgs.Added);
     }
 
     public List<StardewValley.Object> GetTotemInventory()
