@@ -1,5 +1,7 @@
 namespace NermNermNerm.Warpinator;
 
+using StardewValley.Extensions;
+
 public class Marionberry : ModLet
 {
     private class ModDataKeys
@@ -33,8 +35,14 @@ public class Marionberry : ModLet
         void gotPowerItem(string modDataKey, string hudMessage)
         {
             Game1.player.modData[modDataKey] = I("T");
-            Game1.hudMessages.Add(new HUDMessage(hudMessage, HUDMessage.achievement_type));
-            // TODO: Do an animation
+            Game1.drawObjectDialogue(hudMessage); // Closes the existing menu
+            Game1.player.holdUpItemThenMessage(__instance, false);
+            Game1.Multiplayer.broadcastSprites(
+                Game1.currentLocation,
+                new TemporaryAnimatedSprite(10, Game1.player.Position - new Vector2(0,128-12), Color.LightBlue,
+                    layerDepth: (Game1.player.GetBoundingBox().Bottom + 3000) / 10000f)
+            );
+            Game1.playSound("discoverMineral");
         }
 
         switch (__instance.ItemId)

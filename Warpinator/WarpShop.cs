@@ -225,7 +225,7 @@ public class WarpShop  : ModLet
                         new BoothAnimation(BoothAnimationFrame.Poof1, 5),
                         new BoothAnimation(BoothAnimationFrame.Empty, 1),
                     ]);
-                    mountain.playSound("wand");
+                    mountain.playSound("thudStep");
                 }
             }
             else
@@ -243,7 +243,7 @@ public class WarpShop  : ModLet
                         new BoothAnimation(BoothAnimationFrame.Poof5, 5),
                         new BoothAnimation(BoothAnimationFrame.Present, 1),
                     ]);
-                    mountain.playSound("wand");
+                    mountain.playSound("explosion");
                 }
             }
         }
@@ -296,6 +296,7 @@ public class WarpShop  : ModLet
 
     private void GameLoopOnDayStarted(object? sender, DayStartedEventArgs e)
     {
+        // In this event, we draw the booth and do other prep-work for it.
         var mountain = Game1.getLocationFromName("Mountain");
         var buildingsLayer = mountain.Map.GetLayer(I("Buildings"));
         var frontLayer = mountain.Map.GetLayer(I("Front"));
@@ -380,23 +381,5 @@ public class WarpShop  : ModLet
         }
 
         this.SetBoothFrame(BoothAnimationFrame.Empty);
-
-        /* Something from warpnetwork:
-
-                                 Point tilePos = warp.Position;
-           if (id == "farm")
-           {
-               Utils.TryGetActualFarmPoint(ref tilePos, map.Data, Name);
-           }
-           var spot = new Location(tilePos.X, tilePos.Y).Above;
-
-           ModEntry.monitor.Log($"Adding access point for destination '{id}' @ {spot.X}, {spot.Y}");
-
-           Tile tile = Buildings.Tiles[spot];
-           if (tile is null)
-               ModEntry.monitor.Log($"No tile in building layer, could not add access point: '{id}' @ {spot.X}, {spot.Y}", LogLevel.Warn);
-           else
-               tile.Properties["Action"] = "warpnetwork " + id;
-*/
     }
 }

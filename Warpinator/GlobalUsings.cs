@@ -11,6 +11,7 @@ global using NermNermNerm.Stardew.LocalizeFromSource;
 global using StardewModdingAPI;
 global using StardewModdingAPI.Events;
 global using StardewValley;
+global using StardewValley.Extensions;
 global using StardewValley.GameData.Objects;
 global using StardewValley.GameData.Tools;
 global using StardewValley.Locations;
