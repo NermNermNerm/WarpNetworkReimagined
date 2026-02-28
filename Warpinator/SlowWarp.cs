@@ -11,19 +11,23 @@ public class SlowWarp : ModLet
 
     public void WarpFarmer(GameLocation target, int newTime)
     {
-        if (DataLoader.Locations(Game1.content).TryGetValue(target.Name, out var data) &&
-            data.DefaultArrivalTile.HasValue)
+        if (target is Farm)
         {
-            Point tile = data.DefaultArrivalTile.Value;
-
-            this.DoWarpEffects(() =>
-            {
-                Game1.warpFarmer(target.Name, tile.X, tile.Y, false);
-                if (newTime >= 0)
-                {
-                    SafelySetTime(newTime);
-                }
-            }, Game1.player, Game1.player.currentLocation);
+            this.WarpToFarm(newTime);
+        }
+        else if (target.Name == "Beach")
+        {
+            this.DoWarpEffects(target, new Point(20,4), newTime);
+        }
+        else if (target.Name == "Mountain")
+        {
+            this.DoWarpEffects(target, new Point(31,20), newTime);
+        }
+        // TODO: Look for mod data that describes where the player should land.
+        else if (DataLoader.Locations(Game1.content).TryGetValue(target.Name, out var data) &&
+                 data.DefaultArrivalTile.HasValue)
+        {
+            this.DoWarpEffects(target, data.DefaultArrivalTile.Value, newTime);
         }
         else
         {
@@ -32,8 +36,22 @@ public class SlowWarp : ModLet
         }
     }
 
-    private void DoWarpEffects(Action action, Farmer who, GameLocation where)
+    private void WarpToFarm(int newTime)
     {
+        var warpTarget = this.Mod.HomeSpot.HomeLocation;
+        if (warpTarget.location is null)
+        {
+            var frontDoorSpot = Utility.getHomeOfFarmer(Game1.player).getFrontDoorSpot();
+            warpTarget = new(Game1.getFarm(), frontDoorSpot);
+        }
+
+        this.DoWarpEffects(warpTarget.location, warpTarget.tile, newTime);
+    }
+
+    private void DoWarpEffects(GameLocation whereTo, Point xy, int newTime)
+    {
+        var who = Game1.player;
+        var where = Game1.currentLocation!;
         for (int index = 0; index < 12; ++index)
             Game1.Multiplayer.broadcastSprites(where, new TemporaryAnimatedSprite(
                 354,
@@ -65,7 +83,15 @@ public class SlowWarp : ModLet
 
         DelayedAction.fadeAfterDelay(new Game1.afterFadeFunction(() =>
         {
-            action();
+            var lr = new LocationRequest(whereTo.Name, whereTo is FarmHouse /*Note - Cabin is a subclass of FarmHouse */, whereTo);
+            // Since we always warp to the front door of the farmhouse and cabins, face upwards so the farmer doesn't look wierd.
+            // On the farm, since we're at a given x/y, might as well show our beautiful mug to the camera.
+            Game1.warpFarmer( lr, xy.X, xy.Y, whereTo is FarmHouse ? 0 : 2);
+            if (newTime >= 0)
+            {
+                SafelySetTime(newTime);
+            }
+
             Game1.changeMusicTrack(I("none"));
             Game1.fadeToBlackAlpha = 0.99f;
             Game1.screenGlow = false;

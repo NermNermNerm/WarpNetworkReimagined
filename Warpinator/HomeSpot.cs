@@ -22,7 +22,7 @@ public class HomeSpot : ModLet
         var warpForRealMethod = typeof(StardewValley.Object).GetMethod("totemWarpForReal", BindingFlags.NonPublic | BindingFlags.Instance);
         if (warpForRealMethod is null)
         {
-            this.LogWarning($"This version of StardewValley has changed the method 'StardewValley.Object.totemWarpForReal', so the custom warp-farm location feature of this mod will not work.");
+            this.LogWarning($"This version of StardewValley has changed the method 'StardewValley.Object.totemWarpForReal', so the custom warp-farm location feature of this mod will not work for totems.");
         }
         else
         {
@@ -32,7 +32,7 @@ public class HomeSpot : ModLet
         var obWarpForRealMethod = typeof(StardewValley.Buildings.Building).GetMethod("obeliskWarpForReal", BindingFlags.NonPublic | BindingFlags.Static);
         if (obWarpForRealMethod is null)
         {
-            this.LogWarning($"This version of StardewValley has changed the method 'StardewValley.Buildings.Building.obeliskWarpForReal', so the custom warp-farm location feature of this mod will not work.");
+            this.LogWarning($"This version of StardewValley has changed the method 'StardewValley.Buildings.Building.obeliskWarpForReal', so the custom warp-farm location feature of this mod will not work for obelisks.");
         }
         else
         {
