@@ -225,7 +225,8 @@ public class WarpShop  : ModLet
                         new BoothAnimation(BoothAnimationFrame.Poof1, 5),
                         new BoothAnimation(BoothAnimationFrame.Empty, 1),
                     ]);
-                    mountain.playSound("thudStep");
+                    Game1.playSound("thudStep");
+                    // Game1.currentLocation.localSound(); would be a better choice, as we could focus it on Norvin's shop...  but... too lazy.
                 }
             }
             else
@@ -243,7 +244,7 @@ public class WarpShop  : ModLet
                         new BoothAnimation(BoothAnimationFrame.Poof5, 5),
                         new BoothAnimation(BoothAnimationFrame.Present, 1),
                     ]);
-                    mountain.playSound("explosion");
+                    mountain.playSound("clubSmash");
                 }
             }
         }
