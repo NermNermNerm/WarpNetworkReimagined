@@ -6,10 +6,7 @@ namespace NermNermNerm.Warpinator;
 /// </summary>
 public class SlowWarp : ModLet
 {
-    // TODO: Add stuff to do with
-
-
-    public void WarpFarmer(GameLocation target, int newTime)
+    public void WarpFarmer(GameLocation target, int? newTime)
     {
         if (target is Farm)
         {
@@ -17,17 +14,17 @@ public class SlowWarp : ModLet
         }
         else if (target.Name == "Beach")
         {
-            this.DoWarpEffects(target, new Point(20,4), newTime);
+            this.DoWarpWithEffects(target, new Point(20,4), newTime);
         }
         else if (target.Name == "Mountain")
         {
-            this.DoWarpEffects(target, new Point(31,20), newTime);
+            this.DoWarpWithEffects(target, new Point(31,20), newTime);
         }
         // TODO: Look for mod data that describes where the player should land.
         else if (DataLoader.Locations(Game1.content).TryGetValue(target.Name, out var data) &&
                  data.DefaultArrivalTile.HasValue)
         {
-            this.DoWarpEffects(target, data.DefaultArrivalTile.Value, newTime);
+            this.DoWarpWithEffects(target, data.DefaultArrivalTile.Value, newTime);
         }
         else
         {
@@ -36,7 +33,7 @@ public class SlowWarp : ModLet
         }
     }
 
-    private void WarpToFarm(int newTime)
+    private void WarpToFarm(int? newTime)
     {
         var warpTarget = this.Mod.HomeSpot.HomeLocation;
         if (warpTarget.location is null)
@@ -45,10 +42,10 @@ public class SlowWarp : ModLet
             warpTarget = new(Game1.getFarm(), frontDoorSpot);
         }
 
-        this.DoWarpEffects(warpTarget.location, warpTarget.tile, newTime);
+        this.DoWarpWithEffects(warpTarget.location, warpTarget.tile, newTime);
     }
 
-    private void DoWarpEffects(GameLocation whereTo, Point xy, int newTime)
+    public void DoWarpWithEffects(GameLocation whereTo, Point targetTile, int? newTime)
     {
         var who = Game1.player;
         var where = Game1.currentLocation!;
@@ -69,10 +66,10 @@ public class SlowWarp : ModLet
         who.freezePause = 1000;
         Game1.flashAlpha = 1f;
         int num = 0;
-        var tile = who.TilePoint;
-        for (int index = tile.X + 8; index >= tile.X - 8; --index)
+        var sourceTile = who.TilePoint;
+        for (int index = sourceTile.X + 8; index >= sourceTile.X - 8; --index)
         {
-            Game1.Multiplayer.broadcastSprites(where, new TemporaryAnimatedSprite(6, new Vector2(index, tile.Y) * 64f, Color.White, 8, false, 50f, 0, -1, -1f, -1, 0)
+            Game1.Multiplayer.broadcastSprites(where, new TemporaryAnimatedSprite(6, new Vector2(index, sourceTile.Y) * 64f, Color.White, 8, false, 50f, 0, -1, -1f, -1, 0)
             {
                 layerDepth = 1f,
                 delayBeforeAnimationStart = num * 25,
@@ -86,10 +83,10 @@ public class SlowWarp : ModLet
             var lr = new LocationRequest(whereTo.Name, whereTo is FarmHouse /*Note - Cabin is a subclass of FarmHouse */, whereTo);
             // Since we always warp to the front door of the farmhouse and cabins, face upwards so the farmer doesn't look wierd.
             // On the farm, since we're at a given x/y, might as well show our beautiful mug to the camera.
-            Game1.warpFarmer( lr, xy.X, xy.Y, whereTo is FarmHouse ? 0 : 2);
-            if (newTime >= 0)
+            Game1.warpFarmer( lr, targetTile.X, targetTile.Y, whereTo is FarmHouse ? 0 : 2);
+            if (newTime.HasValue)
             {
-                SafelySetTime(newTime);
+                SafelySetTime(newTime.Value);
             }
 
             Game1.changeMusicTrack(I("none"));

@@ -37,6 +37,7 @@ public class ModEntry
     public readonly SlowWarp SlowWarp = new();
     public readonly WarpShop WarpShop = new();
     public readonly Marionberry Marionberry = new();
+    public readonly Return Return = new();
 
     public ModEntry() { }
 
@@ -63,6 +64,7 @@ public class ModEntry
         this.SlowWarp.Entry(this);
         this.WarpShop.Entry(this);
         this.Marionberry.Entry(this);
+        this.Return.Entry(this);
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)

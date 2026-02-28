@@ -8,6 +8,9 @@ public class WarpDestination
     public StardewValley.Object? Totem { get; }
     public bool IsObeliskWarp => this.obeliskWarpCode is not null;
 
+    public Point? TargetTile { get; }
+    public bool IsReturn => this.TargetTile is not null; // Perhaps there should be a more formal way to specify this?
+
     private readonly string? obeliskWarpCode;
 
     /// <summary>
@@ -26,21 +29,30 @@ public class WarpDestination
     /// on the text.
     /// If null and <paramref name="totem"/> is null, then travel should be accomplished via slow-warp.
     /// </param>
-    public WarpDestination(GameLocation? target, StardewValley.Object? totem, string? obeliskWarpCode)
+    public WarpDestination(GameLocation? target, StardewValley.Object? totem, string? obeliskWarpCode, Point? targetTile)
     {
         this.Target = target;
         this.Totem = totem;
         this.obeliskWarpCode = obeliskWarpCode;
+        this.TargetTile = targetTile;
     }
 
-    public string ButtonTitle =>
-        (this.Target is null)
-            ? IF($"{this.Totem!.DisplayName} ({this.Totem.Stack})")
-            : (this.IsObeliskWarp
-                ? LF($"{LocationDisplayName(this.Target)} via obelisk")
-                : (this.Totem is null
-                    ? LF($"{LocationDisplayName(this.Target)} via slow-warp")
-                    : LF($"{LocationDisplayName(this.Target)} via totem ({this.Totem!.Stack})")));
+    public string ButtonTitle
+    {
+        get
+        {
+            if (this.Target is null)
+                return IF($"{this.Totem!.DisplayName} ({this.Totem.Stack})");
+            if (this.TargetTile is not null)
+                return LF($"Return to {LocationDisplayName(this.Target)}");
+            if (this.IsObeliskWarp)
+                return LF($"{LocationDisplayName(this.Target)} via obelisk");
+            if (this.Totem is null)
+                return LF($"{LocationDisplayName(this.Target)} via slow-warp");
+
+            return LF($"{LocationDisplayName(this.Target)} via totem ({this.Totem.Stack})");
+        }
+    }
 
     private static readonly Regex obeliskDefaultActionPattern =
         new Regex(@"^\s*ObeliskWarp\s+(?<destinationLocation>[^\s]+) ", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
@@ -50,6 +62,12 @@ public class WarpDestination
         List<WarpDestination> destinations = new();
 
         List<string> obeliskLocationNames = new();
+        var returnTarget = ModEntry.Instance.Return.ReturnDestination;
+        if (ModEntry.Instance.Marionberry.HasReturn && returnTarget.Target is not null)
+        {
+            destinations.Add(returnTarget);
+        }
+
         if (ModEntry.Instance.Marionberry.HasObeliskIntegration)
         {
             // This is pretty much a fallback, in case the user hasn't set a warp spot for the farm.
@@ -58,8 +76,9 @@ public class WarpDestination
             destinations.Add(new WarpDestination(
                     Game1.getFarm(),
                     null,
-                    IF($"ObeliskWarp Farm {frontDoorSpot.X} {frontDoorSpot.Y} false")
-                ));
+                    IF($"ObeliskWarp Farm {frontDoorSpot.X} {frontDoorSpot.Y} false"),
+                    null)
+                );
             foreach (var building in Game1.getFarm().buildings)
             {
                 var data = building.GetData();
@@ -82,7 +101,7 @@ public class WarpDestination
                         else if (!obeliskLocationNames.Contains(locationName))
                         {
                             obeliskLocationNames.Add(locationName);
-                            destinations.Add(new WarpDestination(targetLocation, null, defaultAction));
+                            destinations.Add(new WarpDestination(targetLocation, null, defaultAction, null));
                         }
                     }
                     // else it's not an obelisk
@@ -95,7 +114,7 @@ public class WarpDestination
         {
             if (!obeliskLocationNames.Contains(location.Name))
             {
-                destinations.Add(new WarpDestination(location, null, null));
+                destinations.Add(new WarpDestination(location, null, null, null));
             }
         }
 
@@ -105,7 +124,7 @@ public class WarpDestination
             // Add the totem as a way to get to the destination unless there is already an obelisk method.
             if (!obeliskLocationNames.Any(o => o == inferredLocation?.Name))
             {
-                destinations.Add(new WarpDestination(inferredLocation, totem, null));
+                destinations.Add(new WarpDestination(inferredLocation, totem, null, null));
             }
         }
 
@@ -128,7 +147,9 @@ public class WarpDestination
                 return string.Compare(lhs.Totem!.DisplayName, rhs.Totem!.DisplayName, StringComparison.CurrentCulture);
             }
 
-            int locationComparisonResult = string.Compare(LocationDisplayName(lhs.Target), LocationDisplayName(rhs.Target), StringComparison.CurrentCulture);
+            string lhsSortString = lhs.Target is Farm ? "" /* alphabetically first */ : LocationDisplayName(lhs.Target);
+            string rhsSortString = rhs.Target is Farm ? "" /* alphabetically first */ : LocationDisplayName(rhs.Target);
+            int locationComparisonResult = string.Compare(lhsSortString, rhsSortString, StringComparison.CurrentCulture);
             if (locationComparisonResult != 0)
             {
                 return locationComparisonResult;
@@ -203,6 +224,17 @@ public class WarpDestination
             Game1.addHUDMessage(new HUDMessage(L("You can't warp there now - today's festival is being set up.}")));
         }
 
+        if (this.TargetTile is not null)
+        {
+            ModEntry.Instance.Return.DoWarp();
+            return;
+        }
+
+        if (ModEntry.Instance.Marionberry.HasReturn)
+        {
+            ModEntry.Instance.Return.SetReturnPoint();
+        }
+
         if (this.Totem is not null)
         {
             ModEntry.Instance.TotemInventory.ReduceCount(this.Totem);
@@ -217,7 +249,7 @@ public class WarpDestination
         else if (this.Target is not null) { // This condition should be guaranteed true, but this lets the static analysis know.
             int numMinutesToPass = 10 * (Game1.IsMultiplayer
                 ? 0 :  ModEntry.Instance.Marionberry.HasFasterWarpPower ? ModEntry.Config.FastWarpTimeCost : ModEntry.Config.SlowWarpTimeCost);
-            int newTime = -1;
+            int? newTime = null;
             if (numMinutesToPass > 0)
             {
                 newTime = Utility.ModifyTime(Game1.timeOfDay, numMinutesToPass);

@@ -120,40 +120,40 @@ public class Marionberry : ModLet
 
         data[ModEntry.FasterWarpObjectId] = new ObjectData()
         {
-            Name = I("Faster Warp Chip"),
-            DisplayName = L("Faster Warp Marionberry Chip"),
+            Name = I("Faster Warp Upgrade"),
+            DisplayName = L("Faster Warp Upgrade"),
             Description = L("Reduces the time your Marionberry's 'slow-warp' takes."),
             Texture = ModEntry.OneTileSpritesPseudoPath,
             SpriteIndex = 2,
         };
         data[ModEntry.OtherPlacesUpgradeObjectId] = new ObjectData()
         {
-            Name = I("Beach and Mountain Chip"),
-            DisplayName = L("Valley Slow-Warp Chip"),
+            Name = I("Beach and Mountain Upgrade"),
+            DisplayName = L("Valley Slow-Warp Upgrade"),
             Description = L("Allows slow-warp to locations around the valley that have a warp shrine."),
             Texture = ModEntry.OneTileSpritesPseudoPath,
             SpriteIndex = 3,
         };
         data[ModEntry.TotemWalletUpgradeObjectId] = new ObjectData()
         {
-            Name = I("Totem Wallet Chip"),
-            DisplayName = L("Totem Wallet Chip"),
+            Name = I("Totem Wallet Upgrade"),
+            DisplayName = L("Totem Wallet Upgrade"),
             Description = L("Enables your Marionberry's totem wallet."),
             Texture = ModEntry.OneTileSpritesPseudoPath,
             SpriteIndex = 4,
         };
         data[ModEntry.ObeliskIntegrationObjectId] = new ObjectData()
         {
-            Name = I("Obelisk Integration Chip"),
-            DisplayName = L("Obelisk Integration Chip"),
+            Name = I("Obelisk Integration Upgrade"),
+            DisplayName = L("Obelisk Integration Upgrade"),
             Description = L("Enables your Marionberry to instantaneously warp you to your farm and any location to which you've built an obelisk for."),
             Texture = ModEntry.OneTileSpritesPseudoPath,
             SpriteIndex = 5,
         };
         data[ModEntry.ReturnUpgradeObjectId] = new ObjectData()
         {
-            Name = I("Return To Last Warp Chip"),
-            DisplayName = L("Return To Last Warp Chip"),
+            Name = I("Return To Last Warp Upgrade"),
+            DisplayName = L("Return To Last Warp Upgrade"),
             Description = L("Enables your Marionberry to warp you back to the last location you warped from."),
             Texture = ModEntry.OneTileSpritesPseudoPath,
             SpriteIndex = 6,

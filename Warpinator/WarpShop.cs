@@ -117,7 +117,7 @@ public class WarpShop  : ModLet
             addStock(ModEntry.TollReceiptObjectId, 100);
         }
 
-        if (Game1.player.Items.Any(i => i.QualifiedItemId == ModEntry.MarionBerryToolQiid))
+        if (Game1.player.Items.Any(i => i?.QualifiedItemId == ModEntry.MarionBerryToolQiid))
         {
             addStock(HomeSpot.HomeSpotObjectId, 50);
 
