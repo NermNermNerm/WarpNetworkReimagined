@@ -1,4 +1,7 @@
+using StardewModdingAPI.Utilities;
+using StardewValley.BellsAndWhistles;
 using StardewValley.GameData.Shops;
+using StardewValley.Mods;
 using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
@@ -52,14 +55,51 @@ public class WarpShop  : ModLet
 
     public override void Entry(ModEntry mod)
     {
+        // u should be able to use Events.Display.RenderedStep at RenderSteps.World_AlwaysFront and just call goblinoDummyNPC.drawAboveAlwaysFrontLayer(e.SpriteBatch)
+
         base.Entry(mod);
 
         mod.Helper.Events.GameLoop.DayStarted += this.GameLoopOnDayStarted;
         mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
         mod.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
-        mod.Helper.Events.GameLoop.DayEnding += OnDayEnding;
-
+        mod.Helper.Events.GameLoop.DayEnding += this.OnDayEnding;
+        mod.Helper.Events.Display.RenderedStep += this.DisplayOnRenderedStep;
         GameLocation.RegisterTileAction(WarpShop.OpenShopTileAction, this.OpenNorvinShop);
+    }
+
+    private class FloatingText
+    {
+        public string Text = "";
+        public Vector2 WorldPosition;
+        public float Alpha = 0f;
+        public int Timer = 0;
+    }
+
+    private readonly PerScreen<FloatingText?> psNorvinText = new ();
+    private FloatingText? norvinText
+    {
+        get => this.psNorvinText.Value;
+        set => this.psNorvinText.Value = value;
+    }
+
+    private void DisplayOnRenderedStep(object? sender, RenderedStepEventArgs e)
+    {
+        if (e.Step == RenderSteps.World_AlwaysFront && this.norvinText is not null)
+        {
+            if (this.norvinText != null)
+            {
+                Vector2 screenPos = Game1.GlobalToLocal(this.norvinText.WorldPosition);
+                SpriteText.drawStringWithScrollCenteredAt(
+                    e.SpriteBatch,
+                    this.norvinText.Text,
+                    (int)screenPos.X,
+                    (int)screenPos.Y,
+                    alpha: this.norvinText.Alpha,
+                    scrollType: 1,
+                    layerDepth: 1f // above everything but UI
+                );
+            }
+        }
     }
 
     private bool HasPaidToll
@@ -199,12 +239,13 @@ public class WarpShop  : ModLet
 
     void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (!Game1.hasLoadedGame || !Context.IsWorldReady || Game1.eventUp || Game1.paused)
+        if (!Game1.hasLoadedGame || !Context.IsWorldReady || Game1.eventUp || Game1.paused || Game1.activeClickableMenu is not null || Game1.currentLocation.Name != "Mountain")
         {
+            this.norvinText = null;
             return;
         }
 
-        var mountain = Game1.getLocationFromName("Mountain");
+        var mountain = Game1.currentLocation;
 
         // 1) Proximity check (once per second)
         if (++this.proximityCounter >= 60  && this.boothAnimations.Count == 0)
@@ -213,8 +254,8 @@ public class WarpShop  : ModLet
 
             if (this.IsNorvinPresent)
             {
-                // Norvin leaves when the players are > 20 tiles away
-                var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 30, mountain);
+                // Norvin leaves when the players are far away
+                var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 25, mountain);
                 if (nearestFarmer is null)
                 {
                     this.boothAnimations.AddRange([
@@ -249,7 +290,7 @@ public class WarpShop  : ModLet
             }
         }
 
-        if (Game1.random.Next(60 * 5) == 0 && this.boothAnimations.Count == 0 && this.IsNorvinPresent)
+        if (this.IsNorvinPresent && Game1.random.Next(60 * 5) == 0 && this.boothAnimations.Count == 0)
         {
             // Blink about every 5 seconds
             this.boothAnimations.AddRange([
@@ -258,19 +299,59 @@ public class WarpShop  : ModLet
                 ]);
         }
 
-        // 2) Facing the nearest player (every 10 ticks)
-        // if (this.norvinPresent && ++this.facingCounter >= 10)
-        //{
-        //    this.facingCounter = 0;
-            // FaceNearestPlayer();
-        //}
+        // Update yelling
+        const int messageDurationInMs = 4500;
+        const int fadeIntervalInMs = 500;
+        if (this.norvinText != null)
+        {
+            this.norvinText.Timer -= Game1.currentGameTime.ElapsedGameTime.Milliseconds;
 
-        // 3) Idle animations (randomized)
-        // if (this.norvinPresent && ++this.idleCounter >= Game1.random.Next(30, 120))
-        // {
-        //     this.idleCounter = 0;
-        //     // PlayIdleAnimation();
-        // }
+            if (this.norvinText.Timer < fadeIntervalInMs)
+                this.norvinText.Alpha = this.norvinText.Timer / (float)fadeIntervalInMs;
+            else if (this.norvinText.Alpha < 1f)
+            {
+                this.norvinText.Alpha = Math.Min(1f, (messageDurationInMs-this.norvinText.Timer) / (float)fadeIntervalInMs);
+            }
+
+            if (this.norvinText.Timer <= 0)
+                this.norvinText = null;
+        }
+
+        // Maybe yell at the player
+        if (this.IsNorvinPresent && this.norvinText is null && this.boothAnimations.Count == 0 && !this.HasPaidToll && Game1.random.Next(60 * 15) == 0)
+        {
+            var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 25, mountain);
+            int durationInTicks = messageDurationInMs * 60 / 1000;
+            if (nearestFarmer == Game1.player && nearestFarmer.Tile.X < WarpShop.BoothLocationX)
+            {
+                this.boothAnimations.AddRange([
+                    new BoothAnimation(BoothAnimationFrame.EyesLeft, durationInTicks),
+                    new BoothAnimation(this.currentAnimationFrame, 10),
+                ]);
+            }
+            else if (nearestFarmer == Game1.player && nearestFarmer.Tile.X > WarpShop.BoothLocationX+6)
+            {
+                this.boothAnimations.AddRange([
+                    new BoothAnimation(BoothAnimationFrame.FaceRight, durationInTicks),
+                    new BoothAnimation(this.currentAnimationFrame, 10),
+                ]);
+            }
+
+            string text = Game1.random.ChooseFrom([
+                L("HEY YOU! PAY THE TOLL!"),
+                L("You gotta pay the toll!"),
+                L("Wanna cross the bridge?  Pay the toll!"),
+                L("Toll first! Walking later!"),
+                L("Hold it! Toll booth, buddy!")
+            ]);
+            this.norvinText = new FloatingText
+            {
+                Text = text,
+                WorldPosition = new Vector2(WarpShop.BoothLocationX*64+128, WarpShop.BoothLocationY*64+64),
+                Alpha = 0f,
+                Timer = messageDurationInMs
+            };
+        }
 
         // Roll any animations
         if (this.boothAnimations.Any())
