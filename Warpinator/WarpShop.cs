@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StardewModdingAPI.Utilities;
 using StardewValley.BellsAndWhistles;
 using StardewValley.GameData.Shops;
@@ -13,6 +14,8 @@ public class WarpShop  : ModLet
     private const string NorvinsShopId = "Warpinator-Norvin";
     private const string OpenShopTileAction = "OpenNorvinsShop";
 
+    public const string IntroEventId = "Warpinator.NorvinIntro";
+
     private int proximityCounter = 0;
     // private int facingCounter = 0;
     private int idleCounter = 0;
@@ -25,6 +28,9 @@ public class WarpShop  : ModLet
     private const int BoothHeightInTiles = 5;
 
     private const string BoothSheetId = "NermNermNerm.Warpinator.TrollBooth";
+
+    private const int MessageDurationInMs = 4500;
+    private const int FadeIntervalInMs = 500;
 
 
     private enum BoothAnimationFrame
@@ -55,8 +61,6 @@ public class WarpShop  : ModLet
 
     public override void Entry(ModEntry mod)
     {
-        // u should be able to use Events.Display.RenderedStep at RenderSteps.World_AlwaysFront and just call goblinoDummyNPC.drawAboveAlwaysFrontLayer(e.SpriteBatch)
-
         base.Entry(mod);
 
         mod.Helper.Events.GameLoop.DayStarted += this.GameLoopOnDayStarted;
@@ -65,6 +69,15 @@ public class WarpShop  : ModLet
         mod.Helper.Events.GameLoop.DayEnding += this.OnDayEnding;
         mod.Helper.Events.Display.RenderedStep += this.DisplayOnRenderedStep;
         GameLocation.RegisterTileAction(WarpShop.OpenShopTileAction, this.OpenNorvinShop);
+
+        Event.RegisterCommand("Warpinator_NorvinWarpIn", this.EventNorvinWarpIn);
+        Event.RegisterCommandAlias("nWarpIn", "Warpinator_NorvinWarpIn");
+        Event.RegisterCommand("Warpinator_NorvinWarpOut", this.EventNorvinWarpOut);
+        Event.RegisterCommandAlias("nWarpOut", "Warpinator_NorvinWarpOut");
+        Event.RegisterCommand("Warpinator_NorvinSay", this.EventNorvinSay);
+        Event.RegisterCommandAlias("nSay", "Warpinator_NorvinSay");
+        Event.RegisterCommand("Warpinator_NorvinFaceDirection", this.EventNorvinFaceDirection);
+        Event.RegisterCommandAlias("nFaceDirection", "Warpinator_NorvinFaceDirection");
     }
 
     private class FloatingText
@@ -237,9 +250,12 @@ public class WarpShop  : ModLet
         this.currentAnimationFrame = newFrame;
     }
 
+    private bool HasPlayerSeenIntroEvent => Game1.player.eventsSeen.Contains(WarpShop.IntroEventId);
+
     void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (!Game1.hasLoadedGame || !Context.IsWorldReady || Game1.eventUp || Game1.paused || Game1.activeClickableMenu is not null || Game1.currentLocation.Name != "Mountain")
+        // TODO: Used to have `Game1.eventUp` in here, but perhaps what we want is to say 'Game1.eventUp && event is not our event'.
+        if (!Game1.hasLoadedGame || !Context.IsWorldReady || Game1.paused || Game1.activeClickableMenu is not null || Game1.currentLocation.Name != "Mountain")
         {
             this.norvinText = null;
             return;
@@ -247,50 +263,40 @@ public class WarpShop  : ModLet
 
         var mountain = Game1.currentLocation;
 
+        if (Game1.player.Tile.X >= 79 && Game1.player.Tile.X <= 80 && Game1.player.Tile.Y >= 17 && Game1.player.Tile.Y <= 18
+            && !this.HasPlayerSeenIntroEvent)
+        {
+            this.TriggerIntroEvent();
+        }
+
         // 1) Proximity check (once per second)
-        if (++this.proximityCounter >= 60  && this.boothAnimations.Count == 0)
+        if (!Game1.eventUp && ++this.proximityCounter >= 60  && this.boothAnimations.Count == 0)
         {
             this.proximityCounter = 0;
 
             if (this.IsNorvinPresent)
             {
                 // Norvin leaves when the players are far away
-                var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 25, mountain);
+                var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 20, mountain);
                 if (nearestFarmer is null)
                 {
-                    this.boothAnimations.AddRange([
-                        new BoothAnimation(BoothAnimationFrame.Poof5, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof4, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof3, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof2, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof1, 5),
-                        new BoothAnimation(BoothAnimationFrame.Empty, 1),
-                    ]);
-                    Game1.playSound("thudStep");
-                    // Game1.currentLocation.localSound(); would be a better choice, as we could focus it on Norvin's shop...  but... too lazy.
+                    this.DoWarpOutAnimation();
                 }
             }
-            else
+            else if (this.HasPlayerSeenIntroEvent)
             {
                 // Norvin appears when the players are < 12 tiles away
                 var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 12, mountain);
 
                 if (nearestFarmer is not null)
                 {
-                    this.boothAnimations.AddRange([
-                        new BoothAnimation(BoothAnimationFrame.Poof1, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof2, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof3, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof4, 5),
-                        new BoothAnimation(BoothAnimationFrame.Poof5, 5),
-                        new BoothAnimation(BoothAnimationFrame.Present, 1),
-                    ]);
-                    mountain.playSound("clubSmash");
+                    this.DoWarpInAnimation();
                 }
             }
         }
 
-        if (this.IsNorvinPresent && Game1.random.Next(60 * 5) == 0 && this.boothAnimations.Count == 0)
+        if ((this.currentAnimationFrame == BoothAnimationFrame.Present || this.currentAnimationFrame == BoothAnimationFrame.EyesLeft)
+            && Game1.random.Next(60 * 5) == 0 && this.boothAnimations.Count == 0)
         {
             // Blink about every 5 seconds
             this.boothAnimations.AddRange([
@@ -300,17 +306,15 @@ public class WarpShop  : ModLet
         }
 
         // Update yelling
-        const int messageDurationInMs = 4500;
-        const int fadeIntervalInMs = 500;
         if (this.norvinText != null)
         {
             this.norvinText.Timer -= Game1.currentGameTime.ElapsedGameTime.Milliseconds;
 
-            if (this.norvinText.Timer < fadeIntervalInMs)
-                this.norvinText.Alpha = this.norvinText.Timer / (float)fadeIntervalInMs;
+            if (this.norvinText.Timer < WarpShop.FadeIntervalInMs)
+                this.norvinText.Alpha = this.norvinText.Timer / (float)WarpShop.FadeIntervalInMs;
             else if (this.norvinText.Alpha < 1f)
             {
-                this.norvinText.Alpha = Math.Min(1f, (messageDurationInMs-this.norvinText.Timer) / (float)fadeIntervalInMs);
+                this.norvinText.Alpha = Math.Min(1f, (WarpShop.MessageDurationInMs-this.norvinText.Timer) / (float)WarpShop.FadeIntervalInMs);
             }
 
             if (this.norvinText.Timer <= 0)
@@ -318,10 +322,10 @@ public class WarpShop  : ModLet
         }
 
         // Maybe yell at the player
-        if (this.IsNorvinPresent && this.norvinText is null && this.boothAnimations.Count == 0 && !this.HasPaidToll && Game1.random.Next(60 * 15) == 0)
+        if (!Game1.eventUp && this.IsNorvinPresent && this.norvinText is null && this.boothAnimations.Count == 0 && !this.HasPaidToll && Game1.random.Next(60 * 15) == 0)
         {
             var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 25, mountain);
-            int durationInTicks = messageDurationInMs * 60 / 1000;
+            int durationInTicks = WarpShop.MessageDurationInMs * 60 / 1000;
             if (nearestFarmer == Game1.player && nearestFarmer.Tile.X < WarpShop.BoothLocationX)
             {
                 this.boothAnimations.AddRange([
@@ -349,7 +353,7 @@ public class WarpShop  : ModLet
                 Text = text,
                 WorldPosition = new Vector2(WarpShop.BoothLocationX*64+128, WarpShop.BoothLocationY*64+64),
                 Alpha = 0f,
-                Timer = messageDurationInMs
+                Timer = WarpShop.MessageDurationInMs
             };
         }
 
@@ -374,6 +378,34 @@ public class WarpShop  : ModLet
                 }
             }
         }
+    }
+
+    private void DoWarpInAnimation()
+    {
+        this.boothAnimations.AddRange([
+            new BoothAnimation(BoothAnimationFrame.Poof1, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof2, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof3, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof4, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof5, 5),
+            new BoothAnimation(BoothAnimationFrame.Present, 1),
+        ]);
+        Game1.playSound("clubSmash");
+        // Game1.currentLocation.localSound(); would be a better choice, as we could focus it on Norvin's shop...  but... too lazy.
+    }
+
+    private void DoWarpOutAnimation()
+    {
+        this.boothAnimations.AddRange([
+            new BoothAnimation(BoothAnimationFrame.Poof5, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof4, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof3, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof2, 5),
+            new BoothAnimation(BoothAnimationFrame.Poof1, 5),
+            new BoothAnimation(BoothAnimationFrame.Empty, 1),
+        ]);
+        Game1.playSound("thudStep");
+        // Game1.currentLocation.localSound(); would be a better choice, as we could focus it on Norvin's shop...  but... too lazy.
     }
 
     private void GameLoopOnDayStarted(object? sender, DayStartedEventArgs e)
@@ -463,5 +495,186 @@ public class WarpShop  : ModLet
         }
 
         this.SetBoothFrame(BoothAnimationFrame.Empty);
+    }
+
+
+    private void EventNorvinWarpIn(Event @event, string[] args, EventContext context)
+    {
+        if (this.boothAnimations.Count > 0)
+        {
+            this.boothAnimations.Clear();
+            this.LogWarning($"Error in event -- WarpIn called when other animations are playing");
+        }
+        this.DoWarpInAnimation();
+        @event.CurrentCommand++;
+    }
+
+    private void EventNorvinWarpOut(Event @event, string[] args, EventContext context)
+    {
+        this.boothAnimations.Clear(); // We don't complain about existing ones, as they might be blinks
+        this.DoWarpOutAnimation();
+        @event.CurrentCommand++;
+    }
+
+    private void EventNorvinSay(Event @event, string[] args, EventContext context)
+    {
+        if (args.Length != 2)
+        {
+            this.LogError($"Incorrect arguments given to 'nSay', {args.Length}.");
+            @event.CurrentCommand++;
+            return;
+        }
+
+        string text = args[1];
+        this.norvinText = new FloatingText
+        {
+            Text = text,
+            WorldPosition = new Vector2(WarpShop.BoothLocationX*64+128, WarpShop.BoothLocationY*64+64),
+            Alpha = 0f,
+            Timer = WarpShop.MessageDurationInMs
+        };
+
+        @event.CurrentCommand++;
+    }
+
+    private void EventNorvinFaceDirection(Event @event, string[] args, EventContext context)
+    {
+        if (args.Length != 2)
+        {
+            this.LogError($"Incorrect arguments given to 'nFaceDirection', {args.Length}.");
+            @event.CurrentCommand++;
+            return;
+        }
+
+        int direction;
+        if (!int.TryParse(args[1], out direction) || direction < 1 || direction > 3)
+        {
+            // Norvin doesn't have a way to face up, which is direction==0.
+            this.LogError($"Invalid direction given to nFaceDirection, '{args[1]}'.  Should be between 1 and 3");
+        }
+
+        this.boothAnimations.Clear();
+        this.SetBoothFrame(direction switch
+        {
+            0 => BoothAnimationFrame.Present, // Up -- actually we don't support this.
+            1 => BoothAnimationFrame.FaceRight,
+            2 => BoothAnimationFrame.Present,
+            _ => BoothAnimationFrame.EyesLeft,
+        });
+
+        @event.CurrentCommand++;
+    }
+
+    private void TriggerIntroEvent()
+    {
+        string eventString = SdvEvent(@$"distantBanjo
+82 22
+farmer 79 14 1
+
+skippable
+
+move farmer 0 4 2
+
+nWarpIn
+move farmer 0 4 1
+move farmer 2 0 1
+nSay ""Hey you!  You gotta pay the toll to cross the bridge!""
+move farmer 0 4 1
+move farmer 4 0 0
+pause 2000
+faceDirection farmer 1
+viewport move 16 0 1000
+pause 250
+nFaceDirection 1
+pause 2000
+viewport move -32 0 500
+pause 1500
+faceDirection farmer 0
+pause 250
+nFaceDirection 2
+
+pause 2500
+nSay ""Well...  You still gotta pay the toll.""
+pause 3000
+
+pause 1000
+emote farmer 36
+pause 500
+move farmer -4 0 3
+
+nSay ""Okay be that way.  Can't cross the bridge until you pay up!""
+move farmer 0 -4 0
+nWarpOut
+pause 500
+faceDirection farmer 1
+pause 3
+move farmer 0 -1 1
+pause 1
+move farmer 0 4 0
+nWarpIn
+faceDirection farmer 2
+emote farmer 16
+pause 500
+move farmer 0 1 1
+move farmer 1 0 1
+
+nSay ""Gonna pay that toll?""
+pause 2000
+move farmer -1 0 1
+nSay ""..guess not..""
+move farmer 0 -4 0
+nWarpOut
+emote farmer 16
+faceDirection farmer 1
+pause 2000
+
+move farmer 0 4 0
+move farmer 1 0 1
+
+nWarpIn
+nSay ""look, you...""
+pause 2000
+emote farmer 8
+pause 2000
+
+nSay ""How'd I get here? I live under the bridge. Crawl out when someone comes by.""
+pause 5000
+emote farmer 12
+pause 600
+nSay ""What? Trolls live under bridges. That's what the books say, so it must be true.""
+pause 5000
+-- Player swishes weapon
+emote farmer 12
+
+nSay ""Okay, okay! Fine. Don't tell the other trolls I told you, but...""
+pause 5000
+nSay ""I actually live in a condo in South Zuzu.""
+pause 5000
+nSay ""Seriously.  You can't get cable out here.""
+pause 5000
+nSay ""I just warp in when someone gets close.""
+pause 6000
+nSay ""Anyway — about that toll.""
+pause 5000
+
+emote farmer 8
+pause 1000
+
+nSay ""How do I do it?""
+pause 5000
+nSay ""hmm...""
+pause 5000
+
+nSay ""You’re wanting some of this warp action...""
+pause 5000
+nSay ""I got a teleporter I could part with. Base model’s cheap, and upgradeable.""
+pause 5000
+nSay ""I’ll make you a good deal on it.""
+pause 5000
+
+end fade
+");
+        Game1.player.eventsSeen.Add(WarpShop.IntroEventId);
+        Game1.currentLocation.startEvent(new Event(eventString) { id = WarpShop.IntroEventId });
     }
 }
