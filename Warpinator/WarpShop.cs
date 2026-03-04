@@ -660,7 +660,7 @@ nSay ""Okay, okay! Fine. Don't tell the other trolls I told you, but...""
 pause 5000
 nSay ""I actually live in a condo in South Zuzu.""
 pause 5000
-nSay ""Seriously.  You can't get cable out here.""
+nSay ""Sure, rent's cheap under the bridge, but you can't get cable.""
 pause 5000
 nSay ""I just warp in when someone gets close.""
 pause 6000
