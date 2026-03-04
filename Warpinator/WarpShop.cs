@@ -59,6 +59,14 @@ public class WarpShop  : ModLet
 
     private bool IsNorvinPresent => this.currentAnimationFrame >= BoothAnimationFrame.Present;
 
+    public class EventCommands
+    {
+        public const string NorvinWarpIn = "Warpinator_NorvinWarpIn";
+        public const string NorvinWarpOut = "Warpinator_NorvinWarpOut";
+        public const string NorvinSay = "Warpinator_NorvinSay";
+        public const string NorvinFaceDirection = "Warpinator_NorvinFaceDirection";
+    }
+
     public override void Entry(ModEntry mod)
     {
         base.Entry(mod);
@@ -71,14 +79,10 @@ public class WarpShop  : ModLet
         mod.Helper.Events.Display.RenderedStep += this.DisplayOnRenderedStep;
         GameLocation.RegisterTileAction(WarpShop.OpenShopTileAction, this.OpenNorvinShop);
 
-        Event.RegisterCommand("Warpinator_NorvinWarpIn", this.EventNorvinWarpIn);
-        Event.RegisterCommandAlias("nWarpIn", "Warpinator_NorvinWarpIn");
-        Event.RegisterCommand("Warpinator_NorvinWarpOut", this.EventNorvinWarpOut);
-        Event.RegisterCommandAlias("nWarpOut", "Warpinator_NorvinWarpOut");
-        Event.RegisterCommand("Warpinator_NorvinSay", this.EventNorvinSay);
-        Event.RegisterCommandAlias("nSay", "Warpinator_NorvinSay");
-        Event.RegisterCommand("Warpinator_NorvinFaceDirection", this.EventNorvinFaceDirection);
-        Event.RegisterCommandAlias("nFaceDirection", "Warpinator_NorvinFaceDirection");
+        Event.RegisterCommand(EventCommands.NorvinWarpIn, this.EventNorvinWarpIn);
+        Event.RegisterCommand(EventCommands.NorvinWarpOut, this.EventNorvinWarpOut);
+        Event.RegisterCommand(EventCommands.NorvinSay, this.EventNorvinSay);
+        Event.RegisterCommand(EventCommands.NorvinFaceDirection, this.EventNorvinFaceDirection);
     }
 
     private class FloatingText
