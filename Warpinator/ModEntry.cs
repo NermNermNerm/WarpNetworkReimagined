@@ -38,6 +38,7 @@ public class ModEntry
     public readonly WarpShop WarpShop = new();
     public readonly Marionberry Marionberry = new();
     public readonly Return Return = new();
+    public readonly CutScenes CutScenes = new();
 
     public ModEntry() { }
 
@@ -65,6 +66,7 @@ public class ModEntry
         this.WarpShop.Entry(this);
         this.Marionberry.Entry(this);
         this.Return.Entry(this);
+        this.CutScenes.Entry(this);
     }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
