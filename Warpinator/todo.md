@@ -8,7 +8,7 @@
   free, then it'd be like having the obs for mountain and beach and farm.
 - [x] BUG: Exiting to title and reloading causes a crash
 - [x] BUG - the totem multiplier thing applies to treasure totems (and it shouldn't).
-- [ ] BUG: Warped to beach at 12:40 on luau day, got a message saying "you can't warp there now, the festival is
+- [x] BUG: Warped to beach at 12:40 on luau day, got a message saying "you can't warp there now, the festival is
   being set up", but it warped there anyway and everything was fine.
 - [ ] Probably broke in SVE
 - [x] Introductory event

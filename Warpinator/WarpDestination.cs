@@ -219,9 +219,10 @@ public class WarpDestination
     public void DoWarp()
     {
         if (Utility.isFestivalDay() && Game1.whereIsTodaysFest == this.Target?.Name &&
-            Utility.getStartTimeOfFestival() < Game1.timeOfDay)
+            Game1.timeOfDay < Utility.getStartTimeOfFestival())
         {
             Game1.addHUDMessage(new HUDMessage(L("You can't warp there now - today's festival is being set up.}")));
+            return;
         }
 
         if (this.TargetTile is not null)
