@@ -63,8 +63,9 @@ public class WarpShop  : ModLet
     {
         base.Entry(mod);
 
-        mod.Helper.Events.GameLoop.DayStarted += this.GameLoopOnDayStarted;
+        mod.Helper.Events.GameLoop.DayStarted += this.OnDayStarted;
         mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
+        mod.Helper.Events.GameLoop.SaveLoaded += this.OnSaveLoaded;
         mod.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
         mod.Helper.Events.GameLoop.DayEnding += this.OnDayEnding;
         mod.Helper.Events.Display.RenderedStep += this.DisplayOnRenderedStep;
@@ -147,6 +148,11 @@ public class WarpShop  : ModLet
                 this.EditShopAssets(editor.AsDictionary<string, ShopData>().Data);
             });
         }
+    }
+
+    private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+    {
+        this.PrepareTileSheet();
     }
 
     private void EditShopAssets(IDictionary<string, ShopData> data)
@@ -408,55 +414,57 @@ public class WarpShop  : ModLet
         // Game1.currentLocation.localSound(); would be a better choice, as we could focus it on Norvin's shop...  but... too lazy.
     }
 
-    private void GameLoopOnDayStarted(object? sender, DayStartedEventArgs e)
+    private void PrepareTileSheet()
+    {
+        var mountain = Game1.getLocationFromName("Mountain");
+        var buildingsLayer = mountain.Map.GetLayer(I("Buildings"));
+        var backLayer = mountain.Map.GetLayer(I("Back"));
+
+        Texture2D texture = this.Mod.Helper.ModContent.Load<Texture2D>("assets/tollbooth.png");
+
+        // Create a tilesheet
+        TileSheet sheet = new TileSheet(
+            id: WarpShop.BoothSheetId,
+            map: mountain.Map,
+            imageSource: this.Mod.Helper.ModContent.GetInternalAssetName("assets/tollbooth.png").BaseName,
+            sheetSize: new xTile.Dimensions.Size(texture.Width / 16, texture.Height / 16),
+            tileSize: new xTile.Dimensions.Size(16, 16)
+        );
+
+        mountain.Map.AddTileSheet(sheet);
+
+        // VERY IMPORTANT: refresh the map’s internal tilesheet references
+        mountain.Map.LoadTileSheets(Game1.mapDisplayDevice);
+
+        int numTiles = (texture.Height / 16) * (texture.Width / 16);
+        if (numTiles != WarpShop.BoothWidthInTiles * WarpShop.BoothHeightInTiles * WarpShop.NumAnimationFrames)
+        {
+            this.LogError($"Mismatch between number of tiles in the shop tilesheet and the number declared texture.Width/16={texture.Width/16} texture.height/16={texture.Height/16}");
+        }
+        this.tiles = new StaticTile[numTiles];
+        for (int i = 0; i < texture.Height / 16 * texture.Width / 16; ++i)
+        {
+            this.tiles[i] = new StaticTile(buildingsLayer, sheet, BlendMode.Alpha, i);
+        }
+
+        for (int index = 0; index < WarpShop.NumAnimationFrames; ++index)
+        {
+            for (int x = 1; x <= 2; ++x)
+            {
+                int y = 4;
+                var tile = this.tiles[
+                    x + index * WarpShop.BoothWidthInTiles +
+                    y * WarpShop.BoothWidthInTiles * WarpShop.NumAnimationFrames];
+                tile.Properties[I("Action")] = WarpShop.OpenShopTileAction;
+            }
+        }
+    }
+
+    private void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
         // In this event, we draw the booth and do other prep-work for it.
         var mountain = Game1.getLocationFromName("Mountain");
-        var buildingsLayer = mountain.Map.GetLayer(I("Buildings"));
-        var frontLayer = mountain.Map.GetLayer(I("Front"));
         var backLayer = mountain.Map.GetLayer(I("Back"));
-
-        if (this.tiles is null)
-        {
-            Texture2D texture = this.Mod.Helper.ModContent.Load<Texture2D>("assets/tollbooth.png");
-
-            // Create a tilesheet
-            TileSheet sheet = new TileSheet(
-                id: WarpShop.BoothSheetId,
-                map: mountain.Map,
-                imageSource: this.Mod.Helper.ModContent.GetInternalAssetName("assets/tollbooth.png").BaseName,
-                sheetSize: new xTile.Dimensions.Size(texture.Width / 16, texture.Height / 16),
-                tileSize: new xTile.Dimensions.Size(16, 16)
-            );
-
-            mountain.Map.AddTileSheet(sheet);
-
-            // VERY IMPORTANT: refresh the map’s internal tilesheet references
-            mountain.Map.LoadTileSheets(Game1.mapDisplayDevice);
-
-            int numTiles = (texture.Height / 16) * (texture.Width / 16);
-            if (numTiles != WarpShop.BoothWidthInTiles * WarpShop.BoothHeightInTiles * WarpShop.NumAnimationFrames)
-            {
-                this.LogError($"Mismatch between number of tiles in the shop tilesheet and the number declared texture.Width/16={texture.Width/16} texture.height/16={texture.Height/16}");
-            }
-            this.tiles = new StaticTile[numTiles];
-            for (int i = 0; i < texture.Height / 16 * texture.Width / 16; ++i)
-            {
-                this.tiles[i] = new StaticTile(buildingsLayer, sheet, BlendMode.Alpha, i);
-            }
-
-            for (int index = 0; index < WarpShop.NumAnimationFrames; ++index)
-            {
-                for (int x = 1; x <= 2; ++x)
-                {
-                    int y = 4;
-                    var tile = this.tiles[
-                        x + index * WarpShop.BoothWidthInTiles +
-                        y * WarpShop.BoothWidthInTiles * WarpShop.NumAnimationFrames];
-                    tile.Properties[I("Action")] = WarpShop.OpenShopTileAction;
-                }
-            }
-        }
 
         for (int dy = 0; dy < 80 / 16; ++dy) // The png is 80px tall
         {
@@ -466,7 +474,7 @@ public class WarpShop  : ModLet
                 int y = WarpShop.BoothLocationY + dy;
 
                 // Clear any existing stuff.
-                Vector2 xy = new Vector2(x,y);
+                Vector2 xy = new Vector2(x, y);
                 // Remove terrain features (trees, bushes, grass, hoe dirt, etc.)
                 mountain.terrainFeatures.Remove(xy);
 
@@ -486,10 +494,12 @@ public class WarpShop  : ModLet
                 var backTile = backLayer.Tiles[x, y];
                 if (backTile is null)
                 {
-                    var backTileSheet = mountain.Map.GetTileSheet("spring_outdoorsTileSheet") ?? mountain.Map.TileSheets.First();
-                    backTile = new StaticTile( backLayer, backTileSheet, BlendMode.Alpha, 0 /* doesn't matter */);
+                    var backTileSheet = mountain.Map.GetTileSheet("spring_outdoorsTileSheet") ??
+                                        mountain.Map.TileSheets.First();
+                    backTile = new StaticTile(backLayer, backTileSheet, BlendMode.Alpha, 0 /* doesn't matter */);
                     backLayer.Tiles[x, y] = backTile;
                 }
+
                 backTile.Properties[I("Diggable")] = new xTile.ObjectModel.PropertyValue(I("F"));
             }
         }
