@@ -35,6 +35,13 @@ public class Marionberry : ModLet
         void gotPowerItem(string modDataKey, string hudMessage)
         {
             Game1.player.modData[modDataKey] = I("T");
+
+            // This line *shouldn't* have any impact on anything, as when we return
+            // from this method, we set __result to false, meaning that it should drop
+            // into SDV code, which reads that result and does exactly this...  And yet...
+            (Game1.activeClickableMenu as ShopMenu)!.heldItem = null;
+
+
             Game1.drawObjectDialogue(hudMessage); // Closes the existing menu
             Game1.player.holdUpItemThenMessage(__instance, false);
             Game1.Multiplayer.broadcastSprites(
@@ -100,7 +107,7 @@ public class Marionberry : ModLet
             Name = I("Warp Home Gadget"),
             AttachmentSlots = 0,
             SalePrice = 0,
-            DisplayName = L("teleporter"),
+            DisplayName = L("Marionberry Teleporter"),
             Description = L("Norvin the bridge troll's old Marionberry(tm) teleporter."),
             Texture = ModEntry.OneTileSpritesPseudoPath,
             SpriteIndex = 7,
