@@ -1,4 +1,4 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 using StardewValley.Extensions;
 
@@ -6,11 +6,11 @@ public class Marionberry : ModLet
 {
     private class ModDataKeys
     {
-        public const string HasFasterWarp = "Warpinator.HasFasterWarp";
-        public const string HasOtherWarps = "Warpinator.HasOtherWarps";
-        public const string HasTotemWallet = "Warpinator.HasTotemWallet";
-        public const string HasObeliskIntegration = "Warpinator.HasObeliskIntegration";
-        public const string HasReturn = "Warpinator.HasReturn";
+        public const string HasFasterWarp = "WarpNetworkReimagined.HasFasterWarp";
+        public const string HasOtherWarps = "WarpNetworkReimagined.HasOtherWarps";
+        public const string HasTotemWallet = "WarpNetworkReimagined.HasTotemWallet";
+        public const string HasObeliskIntegration = "WarpNetworkReimagined.HasObeliskIntegration";
+        public const string HasReturn = "WarpNetworkReimagined.HasReturn";
     }
 
     public bool HasFasterWarpPower => Game1.player.modData.ContainsKey(ModDataKeys.HasFasterWarp);

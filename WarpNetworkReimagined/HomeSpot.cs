@@ -1,11 +1,11 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 public class HomeSpot : ModLet
 {
-    public const string HomeSpotObjectId = "NermNermNerm.Warpinator.HomeSpot";
+    public const string HomeSpotObjectId = "WarpNetworkReimagined.HomeSpot";
     public const int HomeSpotPrice = 100; // in gold
 
-    private const string HomeLocationModDataKey = "NermNermNerm.Warpinator.HomeSpot";
+    private const string HomeLocationModDataKey = "WarpNetworkReimagined.HomeSpot";
 
     public override void Entry(ModEntry mod)
     {

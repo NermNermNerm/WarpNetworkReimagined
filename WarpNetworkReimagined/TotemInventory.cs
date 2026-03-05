@@ -1,8 +1,8 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 public class TotemInventory : ModLet
 {
-    private const string TotemInventoryKey = "Warpinator.TotemInventory";
+    private const string TotemInventoryKey = "WarpNetworkReimagined.TotemInventory";
     private const char InventoryItemSplitCharacter = '|';
     private const char CountIdSeparator = ' ';
 

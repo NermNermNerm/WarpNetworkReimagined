@@ -1,8 +1,8 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 public class CutScenes : ModLet
 {
-    private const string IntroCutScene = "Warpinator.NorvinIntro";
+    private const string IntroCutScene = "WarpNetworkReimagined.NorvinIntro";
 
     public bool HasPlayerSeenIntroEvent => Game1.player.eventsSeen.Contains(CutScenes.IntroCutScene);
 

@@ -1,7 +1,11 @@
-﻿- [ ] Make intro event read from data and not use {nSay} shortcut
+﻿- [x] Make intro event read from data and not use {nSay} shortcut
 - [ ] Give Norvin a dialog like the dwarf
   -   "Corporate banned us from eating people who don't pay the toll.  Seems like the extra toll money didn't pay for the lawsuits."
+- [ ] An NPC will be needed to enable the above dialog.
 - [ ] Add more display name conversions for: GI West, GI North, GI East, GI east East, GI Pirate's cove, Mines, Skull Caverns, and Volcano
+- [ ] Long lines are a problem in the events.
+- [ ] Using the Marioberry while hovering over furniture causes mayhem
+- [ ] Rename to WarpNet2 / "Warp Network Reimagined"
 - [?] Slow-warp can't actually run time off in multiplayer (e.g. both players want to slow-warp
   home for the night...  Do both run off the clock?).  There should be settings
   to either "Ban slow-warp" and "Slow warp for free".  If you go for slow warp for

@@ -1,4 +1,4 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 public interface ISpecialPowerAPI
 {

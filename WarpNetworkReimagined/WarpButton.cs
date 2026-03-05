@@ -1,7 +1,7 @@
 ﻿
 // ADAPTED FROM: https://github.com/tlitookilakin/WarpNetwork/blob/master/WarpNetwork/ui/WarpButton.cs
 
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 class WarpButton : ClickableComponent
 {

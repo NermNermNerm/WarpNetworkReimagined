@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Version>4.16.5</Version>
-    <RootNamespace>NermNermNerm.Warpinator</RootNamespace>
+    <RootNamespace>WarpNetworkReimagined</RootNamespace>
 
     <EnableHarmony>true</EnableHarmony>
     <IgnoreModFilePatterns>\.edits\.json$</IgnoreModFilePatterns>
-    
+
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="i18n\**" />

@@ -1,4 +1,4 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 /// <summary>
 /// This class manages the functionality surrounding how we make the crafting recipes for warp totems

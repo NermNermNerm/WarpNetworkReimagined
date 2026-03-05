@@ -7,14 +7,14 @@ using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
 
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 public class WarpShop  : ModLet
 {
-    private const string NorvinsShopId = "Warpinator-Norvin";
+    private const string NorvinsShopId = "WarpNetworkReimagined-Norvin";
     private const string OpenShopTileAction = "OpenNorvinsShop";
 
-    public const string IntroEventId = "Warpinator.NorvinIntro";
+    public const string IntroEventId = "WarpNetworkReimagined.NorvinIntro";
 
     private int proximityCounter = 0;
     // private int facingCounter = 0;
@@ -27,7 +27,7 @@ public class WarpShop  : ModLet
     private const int BoothWidthInTiles = 4;
     private const int BoothHeightInTiles = 5;
 
-    private const string BoothSheetId = "NermNermNerm.Warpinator.TrollBooth";
+    private const string BoothSheetId = "WarpNetworkReimagined.TrollBooth";
 
     private const int MessageDurationInMs = 4500;
     private const int FadeIntervalInMs = 500;
@@ -122,16 +122,16 @@ public class WarpShop  : ModLet
 
     private bool HasPaidToll
     {
-        get => Game1.player.modData.ContainsKey("Warpinator.HasPaidToll");
+        get => Game1.player.modData.ContainsKey("WarpNetworkReimagined.HasPaidToll");
         set
         {
             if (value)
             {
-                Game1.player.modData["Warpinator.HasPaidToll"] = I("T");
+                Game1.player.modData["WarpNetworkReimagined.HasPaidToll"] = I("T");
             }
             else
             {
-                Game1.player.modData.Remove("Warpinator.HasPaidToll");
+                Game1.player.modData.Remove("WarpNetworkReimagined.HasPaidToll");
             }
         }
     }

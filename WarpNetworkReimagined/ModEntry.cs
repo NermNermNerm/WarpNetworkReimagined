@@ -1,26 +1,26 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 public class ModEntry
     : Mod, ISimpleLog
 {
-    public const string MarionBerryToolId = "NermNermNerm.Warpinator.MarionBerry";
+    public const string MarionBerryToolId = "WarpNetworkReimagined.MarionBerry";
     public const string MarionBerryToolQiid = ItemRegistry.type_tool + ModEntry.MarionBerryToolId;
-    public const string TollReceiptObjectId = "NermNermNerm.Warpinator.TollReceipt";
+    public const string TollReceiptObjectId = "WarpNetworkReimagined.TollReceipt";
     public const string TollReceiptObjectQiid = ItemRegistry.type_object + ModEntry.TollReceiptObjectId;
-    public const string FasterWarpObjectId = "NermNermNerm.Warpinator.FasterWarp";
+    public const string FasterWarpObjectId = "WarpNetworkReimagined.FasterWarp";
     public const string FasterWarpObjectQiid = ItemRegistry.type_object + ModEntry.FasterWarpObjectId;
-    public const string OtherPlacesUpgradeObjectId = "NermNermNerm.Warpinator.OtherPlacesUpgrade";
+    public const string OtherPlacesUpgradeObjectId = "WarpNetworkReimagined.OtherPlacesUpgrade";
     public const string OtherPlacesUpgradeObjectQiid = ItemRegistry.type_object + ModEntry.OtherPlacesUpgradeObjectId;
-    public const string TotemWalletUpgradeObjectId = "NermNermNerm.Warpinator.TotemWalletUpgrade";
+    public const string TotemWalletUpgradeObjectId = "WarpNetworkReimagined.TotemWalletUpgrade";
     public const string TotemWalletUpgradeObjectQiid = ItemRegistry.type_object + ModEntry.TotemWalletUpgradeObjectId;
-    public const string ObeliskIntegrationObjectId = "NermNermNerm.Warpinator.ObeliskIntegration";
+    public const string ObeliskIntegrationObjectId = "WarpNetworkReimagined.ObeliskIntegration";
     public const string ObeliskIntegrationObjectQiid = ItemRegistry.type_object + ModEntry.ObeliskIntegrationObjectId;
-    public const string ReturnUpgradeObjectId = "NermNermNerm.Warpinator.ReturnUpgrade";
+    public const string ReturnUpgradeObjectId = "WarpNetworkReimagined.ReturnUpgrade";
     public const string ReturnUpgradeObjectQiid = ItemRegistry.type_object + ModEntry.ReturnUpgradeObjectId;
 
-    public const string TwoTileSpritesPseudoPath = "Mods/NermNermNerm/Warpinator/Sprites";
-    public const string OneTileSpritesPseudoPath = "Mods/NermNermNerm/Warpinator/1x1Sprites";
-    public const string PortraitsPseudoPath = "Mods/NermNermNerm/Warpinator/Portraits";
+    public const string TwoTileSpritesPseudoPath = "Mods/WarpNetworkReimagined/Sprites";
+    public const string OneTileSpritesPseudoPath = "Mods/WarpNetworkReimagined/1x1Sprites";
+    public const string PortraitsPseudoPath = "Mods/WarpNetworkReimagined/Portraits";
 
     public readonly Powers Powers = new Powers();
 

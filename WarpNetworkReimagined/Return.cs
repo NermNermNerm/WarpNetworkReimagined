@@ -1,11 +1,11 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 /// <summary>
 ///   Manages stuff to do with the 'Return' feature of the wand
 /// </summary>
 public class Return : ModLet
 {
-    private const string ModDataKey = "Warpinator.ReturnDestination";
+    private const string ModDataKey = "WarpNetworkReimagined.ReturnDestination";
 
     public override void Entry(ModEntry mod)
     {

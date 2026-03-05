@@ -1,6 +1,6 @@
 using xTile.Dimensions;
 
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 public class WarpDestination
 {
@@ -190,12 +190,12 @@ public class WarpDestination
 
         // See if it's a custom totem where the author tagged it with a destination.
         GameLocation? location = null;
-        if (totem.modData.TryGetValue("NermNermNerm.Warpinator.Target", out string targetValue))
+        if (totem.modData.TryGetValue("WarpNetworkReimagined.Target", out string targetValue))
         {
             location = Game1.getLocationFromName(targetValue);
             if (location is null)
             {
-                ModEntry.Instance.LogErrorOnce($"The mod that inserted {totem.QualifiedItemId} set NermNermNerm.Warpinator.Target to '{targetValue}', but that doesn't seem to be a location name.");
+                ModEntry.Instance.LogErrorOnce($"The mod that inserted {totem.QualifiedItemId} set WarpNetworkReimagined.Target to '{targetValue}', but that doesn't seem to be a location name.");
             }
         }
 

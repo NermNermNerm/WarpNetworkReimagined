@@ -1,12 +1,12 @@
 ﻿{
     "$schema": "https://smapi.io/schemas/manifest.json",
-    "Name": "Warpinator",
+    "Name": "WarpNetworkReimagined",
     "Author": "NermNermNerm",
     "Version": "1.0.0",
     "MinimumApiVersion": "3.14.0",
-    "UniqueID": "NermNermNerm.Warpinator",
+    "UniqueID": "WarpNetworkReimagined",
     "Description": "A balanced way to teleport.",
-    "EntryDll": "Warpinator.dll",
+    "EntryDll": "WarpNetworkReimagined.dll",
     "UpdateKeys": [ "GitHub:NermNermNerm/Warpinator" ],
     "Dependencies": [ ]
 }

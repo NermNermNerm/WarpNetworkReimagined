@@ -1,7 +1,7 @@
 ﻿
 // ADAPTED FROM:  https://github.com/tlitookilakin/WarpNetwork/blob/master/WarpNetwork/ui/WarpMenu.cs
 
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 class WarpMenu : IClickableMenu
 {

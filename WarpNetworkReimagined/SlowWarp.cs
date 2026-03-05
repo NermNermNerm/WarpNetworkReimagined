@@ -1,4 +1,4 @@
-namespace NermNermNerm.Warpinator;
+namespace WarpNetworkReimagined;
 
 /// <summary>
 /// Handles all the things the mod does around the "slow-warp" feature, where no play-time expires but
