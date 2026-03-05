@@ -61,10 +61,10 @@ public class WarpShop  : ModLet
 
     public class EventCommands
     {
-        public const string NorvinWarpIn = "Warpinator_NorvinWarpIn";
-        public const string NorvinWarpOut = "Warpinator_NorvinWarpOut";
-        public const string NorvinSay = "Warpinator_NorvinSay";
-        public const string NorvinFaceDirection = "Warpinator_NorvinFaceDirection";
+        public const string NorvinWarpIn = "WarpNet2_NorvinWarpIn";
+        public const string NorvinWarpOut = "WarpNet2_NorvinWarpOut";
+        public const string NorvinSay = "WarpNet2_NorvinSay";
+        public const string NorvinFaceDirection = "WarpNet2_NorvinFaceDirection";
     }
 
     public override void Entry(ModEntry mod)
