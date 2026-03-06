@@ -234,6 +234,49 @@ public class WarpShop  : ModLet
             this.HasPaidToll = true;
         }
 
+        void gotPowerItem(string modDataKey, string hudMessage)
+        {
+            Game1.player.modData[modDataKey] = I("T");
+
+            // This is a pretty spicy bit of code.  Setting heldItem to null is crucial because
+            // otherwise, when drawObjectDialog runs, needs to put up its own "menu", which means
+            // it wants to close the one that's up right now, and that means it'll try and complete
+            // the sale of the "heldItem".  Setting it to null prevents it from doing that
+            // completion here (if we keep on doing this drawObjectDialogue animation) and also
+            // if we drop it and find some other way to animate the sale.
+            (Game1.activeClickableMenu as ShopMenu)!.heldItem = null;
+            Game1.drawObjectDialogue(hudMessage); // Closes the existing menu
+
+            var item = ItemRegistry.Create(salable.QualifiedItemId);
+            Game1.player.holdUpItemThenMessage(item, false);
+            Game1.Multiplayer.broadcastSprites(
+                Game1.currentLocation,
+                new TemporaryAnimatedSprite(10, Game1.player.Position - new Vector2(0,128-12), Color.LightBlue,
+                    layerDepth: (Game1.player.GetBoundingBox().Bottom + 3000) / 10000f)
+            );
+            Game1.playSound("discoverMineral");
+        }
+
+        switch (salable.QualifiedItemId)
+        {
+            case ModEntry.FasterWarpObjectQiid:
+                gotPowerItem(Marionberry.ModDataKeys.HasFasterWarp, L("Your Marionberry's warping speed has been upgraded."));
+                return true; // If we hadn't already closed the menu, this would cause the menu to close.
+            case ModEntry.OtherPlacesUpgradeObjectQiid:
+                gotPowerItem(Marionberry.ModDataKeys.HasOtherWarps, L("Your Marionberry can now slow-warp you to other places in the valley."));
+                return true; // ditto
+            case ModEntry.ObeliskIntegrationObjectQiid:
+                gotPowerItem(Marionberry.ModDataKeys.HasObeliskIntegration, L("Your Marionberry can now instantly warp you to the farm and take advantage of obelisks."));
+                return true; // ditto
+            case ModEntry.TotemWalletUpgradeObjectQiid:
+                gotPowerItem(Marionberry.ModDataKeys.HasTotemWallet, L("Your Marionberry now has a wallet for keeping your warp totems."));
+                ModEntry.Instance.TotemInventory.CheckPlayerInventoryForTotems();
+                return true; // ditto
+            case ModEntry.ReturnUpgradeObjectQiid:
+                gotPowerItem(Marionberry.ModDataKeys.HasReturn, L("Your Marionberry can now return you to the place you warped from."));
+                return true; // ditto
+        }
+
         return false;
     }
 

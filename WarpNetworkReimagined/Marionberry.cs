@@ -4,7 +4,7 @@ using StardewValley.Extensions;
 
 public class Marionberry : ModLet
 {
-    private class ModDataKeys
+    public class ModDataKeys
     {
         public const string HasFasterWarp = "WarpNetworkReimagined.HasFasterWarp";
         public const string HasOtherWarps = "WarpNetworkReimagined.HasOtherWarps";
@@ -23,61 +23,7 @@ public class Marionberry : ModLet
     {
         base.Entry(mod);
 
-        mod.Harmony.Patch(
-            typeof(StardewValley.Object).GetMethod(nameof(StardewValley.Object.actionWhenPurchased)),
-            new(typeof(Marionberry), nameof(Marionberry.PrefixActionWhenPurchased)));
-
         this.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
-    }
-
-    private static bool PrefixActionWhenPurchased(StardewValley.Object __instance, ref bool __result)
-    {
-        void gotPowerItem(string modDataKey, string hudMessage)
-        {
-            Game1.player.modData[modDataKey] = I("T");
-
-            // This line *shouldn't* have any impact on anything, as when we return
-            // from this method, we set __result to false, meaning that it should drop
-            // into SDV code, which reads that result and does exactly this...  And yet...
-            (Game1.activeClickableMenu as ShopMenu)!.heldItem = null;
-
-
-            Game1.drawObjectDialogue(hudMessage); // Closes the existing menu
-            Game1.player.holdUpItemThenMessage(__instance, false);
-            Game1.Multiplayer.broadcastSprites(
-                Game1.currentLocation,
-                new TemporaryAnimatedSprite(10, Game1.player.Position - new Vector2(0,128-12), Color.LightBlue,
-                    layerDepth: (Game1.player.GetBoundingBox().Bottom + 3000) / 10000f)
-            );
-            Game1.playSound("discoverMineral");
-        }
-
-        switch (__instance.ItemId)
-        {
-            case ModEntry.FasterWarpObjectId:
-                gotPowerItem(ModDataKeys.HasFasterWarp, L("Your Marionberry's warping speed has been upgraded."));
-                __result = true;
-                return false; // skip vanilla behavior
-            case ModEntry.OtherPlacesUpgradeObjectId:
-                gotPowerItem(ModDataKeys.HasOtherWarps, L("Your Marionberry can now slow-warp you to other places in the valley."));
-                __result = true;
-                return false; // skip vanilla behavior
-            case ModEntry.ObeliskIntegrationObjectId:
-                gotPowerItem(ModDataKeys.HasObeliskIntegration, L("Your Marionberry can now instantly warp you to the farm and take advantage of obelisks."));
-                __result = true;
-                return false; // skip vanilla behavior
-            case ModEntry.TotemWalletUpgradeObjectId:
-                gotPowerItem(ModDataKeys.HasTotemWallet, L("Your Marionberry now has a wallet for keeping your warp totems."));
-                ModEntry.Instance.TotemInventory.CheckPlayerInventoryForTotems();
-                __result = true;
-                return false; // skip vanilla behavior
-            case ModEntry.ReturnUpgradeObjectId:
-                gotPowerItem(ModDataKeys.HasReturn, L("Your Marionberry can now return you to the place you warped from."));
-                __result = true;
-                return false; // skip vanilla behavior
-        }
-
-        return true; // let vanilla handle everything else
     }
 
 
