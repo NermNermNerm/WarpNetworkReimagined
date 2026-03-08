@@ -180,7 +180,7 @@ public class WarpShop  : ModLet
             addStock(ModEntry.TollReceiptObjectId, 100);
         }
 
-        if (Game1.player.Items.Any(i => i?.QualifiedItemId == ModEntry.MarionBerryToolQiid))
+        if (Game1.player.Items.Any(i => i?.QualifiedItemId == Marionberry.MarionberryQiid))
         {
             addStock(HomeSpot.HomeSpotObjectId, 50);
 
@@ -211,7 +211,7 @@ public class WarpShop  : ModLet
         }
         else
         {
-            stock[ItemRegistry.Create(ModEntry.MarionBerryToolQiid)] = new ItemStockInformation(1000, 1);
+            stock[ItemRegistry.Create(Marionberry.MarionberryQiid)] = new ItemStockInformation(1000, 1);
         }
 
         // Game1.playSound("clank");

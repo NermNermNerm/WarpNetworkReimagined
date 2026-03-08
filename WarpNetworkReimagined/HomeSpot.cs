@@ -175,7 +175,7 @@ public class HomeSpot : ModLet
         // NOTE!  The method we're patching takes an argument, 'Farmer who'...  But if you look at the
         //  implementation of that method, it ignores it -- the money-shot call, Game1.warpFarmer always
         //  warps Game1.player.
-        if (destination != I("Farm") || Game1.player.ActiveItem.QualifiedItemId != ModEntry.MarionBerryToolQiid)
+        if (destination != I("Farm") || Game1.player.ActiveItem.QualifiedItemId != Marionberry.MarionberryQiid)
         {
             return true; // Not using the Marionberry or not going to farm.
         }

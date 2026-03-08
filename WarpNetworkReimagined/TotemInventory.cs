@@ -54,7 +54,7 @@ public class TotemInventory : ModLet
 
     private void PlayerOnInventoryChanged(object? sender, InventoryChangedEventArgs eventArgs)
     {
-        if (!this.Mod.Marionberry.HasTotemWallet || !Game1.player.Items.Any(i => i?.QualifiedItemId == ModEntry.MarionBerryToolQiid))
+        if (!this.Mod.Marionberry.HasTotemWallet || !Game1.player.Items.Any(i => i?.QualifiedItemId == Marionberry.MarionberryQiid))
         {
             // Player hasn't got a marionberry or the totem upgrade, so we don't do anything.
             return;

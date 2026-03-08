@@ -3,8 +3,6 @@ namespace WarpNetworkReimagined;
 public class ModEntry
     : Mod, ISimpleLog
 {
-    public const string MarionBerryToolId = "WarpNetworkReimagined.MarionBerry";
-    public const string MarionBerryToolQiid = ItemRegistry.type_tool + ModEntry.MarionBerryToolId;
     public const string TollReceiptObjectId = "WarpNetworkReimagined.TollReceipt";
     public const string TollReceiptObjectQiid = ItemRegistry.type_object + ModEntry.TollReceiptObjectId;
     public const string FasterWarpObjectId = "WarpNetworkReimagined.FasterWarp";
@@ -54,8 +52,6 @@ public class ModEntry
         Config = this.Helper.ReadConfig<ModConfig>();
         this.ConfigMenu.Entry(this);
         this.Powers.Entry(this);
-
-        Patches.Patch(this);
 
         this.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
 

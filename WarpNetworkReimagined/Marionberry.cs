@@ -13,6 +13,9 @@ public class Marionberry : ModLet
         public const string HasReturn = "WarpNetworkReimagined.HasReturn";
     }
 
+    public const string MarionberryId = "WarpNetworkReimagined.MarionBerry";
+    public const string MarionberryQiid = ItemRegistry.type_object + Marionberry.MarionberryId;
+
     public bool HasFasterWarpPower => Game1.player.modData.ContainsKey(ModDataKeys.HasFasterWarp);
     public bool HasOtherWarps => Game1.player.modData.ContainsKey(ModDataKeys.HasOtherWarps);
     public bool HasTotemWallet => Game1.player.modData.ContainsKey(ModDataKeys.HasTotemWallet);
@@ -24,46 +27,42 @@ public class Marionberry : ModLet
         base.Entry(mod);
 
         this.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
+
+        var method = typeof(StardewValley.Object).GetMethod(nameof(StardewValley.Object.performUseAction));
+        this.Mod.Harmony.Patch(method,
+            new HarmonyMethod(typeof(Marionberry), nameof(Marionberry.PerformUseActionPrefix)));
     }
 
+    private static bool PerformUseActionPrefix(GameLocation location, StardewValley.Object __instance, ref bool __result)
+    {
+        if (__instance.QualifiedItemId != Marionberry.MarionberryQiid)
+        {
+            return true;
+        }
+
+        // Pigeoned this up from what's in the decompiled code to make it so we don't let the marionberry get used in
+        //  the same conditions other objects can't get used.  Didn't try to make the code prettier, so we can be sure
+        //  we're doing the same shenanigans.
+        if (!Game1.player.canMove || __instance.isTemporarilyInvisible)
+            return true;
+        bool flag = !Game1.eventUp && !Game1.isFestival() && !Game1.fadeToBlack && !Game1.player.swimming.Value && !Game1.player.bathingClothes.Value && !Game1.player.onBridge.Value;
+        if (!flag)
+            return true;
+        // end copypasta
+
+        Game1.activeClickableMenu = new WarpMenu(ModEntry.Instance);
+        return false;
+    }
 
     private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
     {
-        if (e.NameWithoutLocale.IsEquivalentTo("Data/Tools"))
-        {
-            e.Edit(editor =>
-            {
-                EditToolAssets(editor.AsDictionary<string, ToolData>().Data);
-            });
-        }
-        else if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
+        if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
         {
             e.Edit(editor =>
             {
                 EditObjectAssets(editor.AsDictionary<string, ObjectData>().Data);
             });
         }
-    }
-
-    private static void EditToolAssets(IDictionary<string, ToolData> data)
-    {
-        data[ModEntry.MarionBerryToolId] = new ToolData
-        {
-            ClassName = I("Wand"),
-            Name = I("Warp Home Gadget"),
-            AttachmentSlots = 0,
-            SalePrice = 0,
-            DisplayName = L("Marionberry Teleporter"),
-            Description = L("Norvin the bridge troll's old Marionberry(tm) teleporter."),
-            Texture = ModEntry.OneTileSpritesPseudoPath,
-            SpriteIndex = 7,
-            MenuSpriteIndex = -1,
-            UpgradeLevel = 0,
-            ConventionalUpgradeFrom = null,
-            UpgradeFrom = null,
-            CanBeLostOnDeath = false,
-            SetProperties = null,
-        };
     }
 
     private static void EditObjectAssets(IDictionary<string, ObjectData> data)
@@ -78,6 +77,17 @@ public class Marionberry : ModLet
             SpriteIndex = 1,
         };
         //
+
+        data[Marionberry.MarionberryId] = new ObjectData()
+        {
+            Name = I("Marionberry"),
+            DisplayName = L("Marionberry Teleporter"),
+            Description = L("Norvin the bridge troll's old Marionberry(tm) teleporter."),
+            Texture = ModEntry.OneTileSpritesPseudoPath,
+            SpriteIndex = 7,
+            CanBeGivenAsGift = false,
+            CanBeTrashed = false,
+        };
 
         data[ModEntry.FasterWarpObjectId] = new ObjectData()
         {
