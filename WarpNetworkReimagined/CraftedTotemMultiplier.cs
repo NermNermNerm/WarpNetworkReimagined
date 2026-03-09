@@ -61,8 +61,7 @@ public class CraftedTotemMultiplier : ModLet
             }
 
             if (item.GetContextTags().Contains("totem_item")
-                && item.QualifiedItemId != "(O)681" /* rain totem */
-                && item.QualifiedItemId != "(O)TreasureTotem")
+                && item.Name.StartsWith(I("Warp "), StringComparison.InvariantCulture))
             {
                 string yieldQuantityStr = match.Groups[I("quantity")].Value;
                 int yieldQuantity = string.IsNullOrEmpty(yieldQuantityStr) ? 1 : int.Parse(yieldQuantityStr);

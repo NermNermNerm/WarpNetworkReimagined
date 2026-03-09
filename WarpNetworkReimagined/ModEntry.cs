@@ -103,13 +103,6 @@ public class ModEntry
         }
     }
 
-    public bool IsWandUseBlocked => Game1.eventUp
-                                 || Game1.isFestival()
-                                 || Game1.fadeToBlack
-                                 || Game1.player.swimming.Value
-                                 || Game1.player.bathingClothes.Value
-                                 || Game1.player.onBridge.Value;
-
     public IEnumerable<GameLocation> SlowWarpDestinations
     {
         get
@@ -125,10 +118,5 @@ public class ModEntry
                 yield return Game1.getLocationFromName(I("Mountain"));
             }
         }
-    }
-
-    public void UseWandWithMenu()
-    {
-        Game1.activeClickableMenu = new WarpMenu(this);
     }
 }

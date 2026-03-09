@@ -14,9 +14,9 @@ public class CutScenes : ModLet
         mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
     }
 
-    private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
+    private void OnUpdateTicked(object? sender, EventArgs e)
     {
-        if (Game1.currentLocation?.Name == "Mountain" && !Game1.eventUp && Game1.player.Tile.X >= 79 && Game1.player.Tile.X <= 80 && Game1.player.Tile.Y >= 17 && Game1.player.Tile.Y <= 18
+        if (Game1.currentLocation?.Name == "Mountain" && !Game1.eventUp && Game1.player.Tile.X >= 77 && Game1.player.Tile.X <= 89 && Game1.player.Tile.Y >= 17 && Game1.player.Tile.Y <= 18
             && !this.HasPlayerSeenIntroEvent)
         {
             string eventText = Game1.content.Load<Dictionary<string, string>>("Data\\Events\\Mountain")[CutScenes.IntroCutScene];
@@ -41,8 +41,8 @@ skippable
 move farmer 0 4 2
 
 {WarpShop.EventCommands.NorvinWarpIn}
-move farmer 0 4 1
 move farmer 2 0 1
+move farmer 0 4 1
 {WarpShop.EventCommands.NorvinSay} ""Hey you!  You gotta pay the toll to cross the bridge!""
 move farmer 0 4 1
 move farmer 4 0 0
