@@ -306,7 +306,7 @@ public class WarpShop  : ModLet
     void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
         // TODO: Used to have `Game1.eventUp` in here, but perhaps what we want is to say 'Game1.eventUp && event is not our event'.
-        if (!Game1.hasLoadedGame || !Context.IsWorldReady || Game1.paused || Game1.activeClickableMenu is not null || Game1.currentLocation.Name != "Mountain")
+        if (!Game1.hasLoadedGame || !Context.IsWorldReady || Game1.paused || Game1.activeClickableMenu is not null || Game1.currentLocation?.Name != "Mountain")
         {
             this.norvinText = null;
             return;

@@ -7,6 +7,6 @@
     "UniqueID": "WarpNetworkReimagined",
     "Description": "A balanced way to teleport.",
     "EntryDll": "WarpNetworkReimagined.dll",
-    "UpdateKeys": [ "GitHub:NermNermNerm/WarpNetworkReimagined" ],
+    "UpdateKeys": [ "GitHub:NermNermNerm/WarpNetworkReimagined", "Nexus:43527" ],
     "Dependencies": [ ]
 }
