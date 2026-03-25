@@ -4,8 +4,8 @@
     "Author": "NermNermNerm",
     "Version": "1.0.1",
     "MinimumApiVersion": "3.14.0",
-    "UniqueID": "WarpNetworkReimagined",
-    "Description": "A balanced way to teleport.",
+    "UniqueID": "NermNermNerm.WarpNetworkReimagined",
+    "Description": "A balanced fast-travel mod.",
     "EntryDll": "WarpNetworkReimagined.dll",
     "UpdateKeys": [ "GitHub:NermNermNerm/WarpNetworkReimagined", "Nexus:43527" ],
     "Dependencies": [ ]

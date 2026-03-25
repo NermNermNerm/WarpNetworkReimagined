@@ -186,27 +186,27 @@ public class WarpShop  : ModLet
 
             if (!this.Mod.Marionberry.HasOtherWarps)
             {
-                addStock(ModEntry.OtherPlacesUpgradeObjectQiid, 2000);
+                addStock(ModEntry.OtherPlacesUpgradeObjectQiid, 1000);
             }
 
             if (!this.Mod.Marionberry.HasFasterWarpPower)
             {
-                addStock(ModEntry.FasterWarpObjectQiid, 25000);
+                addStock(ModEntry.FasterWarpObjectQiid, 15000);
             }
 
             if (!this.Mod.Marionberry.HasTotemWallet)
             {
-                addStock(ModEntry.TotemWalletUpgradeObjectQiid, 20000);
+                addStock(ModEntry.TotemWalletUpgradeObjectQiid, 5000);
             }
 
             if (!this.Mod.Marionberry.HasObeliskIntegration)
             {
-                addStock(ModEntry.ObeliskIntegrationObjectQiid, 900000);
+                addStock(ModEntry.ObeliskIntegrationObjectQiid, 500000);
             }
 
             if (!this.Mod.Marionberry.HasReturn)
             {
-                addStock(ModEntry.ReturnUpgradeObjectQiid, 1000000);
+                addStock(ModEntry.ReturnUpgradeObjectQiid, 1500000);
             }
         }
         else
