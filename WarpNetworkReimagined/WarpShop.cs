@@ -3,6 +3,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley.BellsAndWhistles;
 using StardewValley.GameData.Shops;
 using StardewValley.Mods;
+using xTile;
 using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
@@ -53,6 +54,7 @@ public class WarpShop  : ModLet
 
     private readonly List<BoothAnimation> boothAnimations = new();
 
+    private Map? tilesArePreparedFor = null;
     private StaticTile[]? tiles = null;
 
     private BoothAnimationFrame currentAnimationFrame = BoothAnimationFrame.Empty;
@@ -73,7 +75,6 @@ public class WarpShop  : ModLet
 
         mod.Helper.Events.GameLoop.DayStarted += this.OnDayStarted;
         mod.Helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
-        mod.Helper.Events.GameLoop.SaveLoaded += this.OnSaveLoaded;
         mod.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
         mod.Helper.Events.GameLoop.DayEnding += this.OnDayEnding;
         mod.Helper.Events.Display.RenderedStep += this.DisplayOnRenderedStep;
@@ -152,11 +153,6 @@ public class WarpShop  : ModLet
                 this.EditShopAssets(editor.AsDictionary<string, ShopData>().Data);
             });
         }
-    }
-
-    private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
-    {
-        this.PrepareTileSheet();
     }
 
     private void EditShopAssets(IDictionary<string, ShopData> data)
@@ -286,6 +282,7 @@ public class WarpShop  : ModLet
         var buildingsLayer = mountain.Map.GetLayer(I("Buildings"));
         var frontLayer = mountain.Map.GetLayer(I("Front"));
         var sheet = mountain.Map.GetTileSheet(WarpShop.BoothSheetId);
+        var tiles = this.PrepareTileSheet();
 
         for (int dy = 0; dy < WarpShop.BoothHeightInTiles; ++dy) // The png is 80px tall
         {
@@ -296,7 +293,7 @@ public class WarpShop  : ModLet
                 int tileIndex = (int)newFrame * WarpShop.BoothWidthInTiles + dx
                         + dy * (WarpShop.NumAnimationFrames * WarpShop.BoothWidthInTiles); // dy*tiles-per-row
 
-                (dy < 3 ? frontLayer : buildingsLayer).Tiles[x, y] = this.tiles![tileIndex];
+                (dy < 3 ? frontLayer : buildingsLayer).Tiles[x, y] = tiles[tileIndex];
             }
         }
 
@@ -453,9 +450,15 @@ public class WarpShop  : ModLet
         // Game1.currentLocation.localSound(); would be a better choice, as we could focus it on Norvin's shop...  but... too lazy.
     }
 
-    private void PrepareTileSheet()
+    private StaticTile[] PrepareTileSheet()
     {
         var mountain = Game1.getLocationFromName("Mountain");
+
+        if (this.tilesArePreparedFor == mountain.Map)
+        {
+            return this.tiles!;
+        }
+
         var buildingsLayer = mountain.Map.GetLayer(I("Buildings"));
         var backLayer = mountain.Map.GetLayer(I("Back"));
 
@@ -497,6 +500,9 @@ public class WarpShop  : ModLet
                 tile.Properties[I("Action")] = WarpShop.OpenShopTileAction;
             }
         }
+
+        this.tilesArePreparedFor = mountain.Map;
+        return this.tiles;
     }
 
     private void OnDayStarted(object? sender, DayStartedEventArgs e)
