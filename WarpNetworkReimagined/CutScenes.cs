@@ -1,3 +1,5 @@
+using StardewValley.GameData.Characters;
+
 namespace WarpNetworkReimagined;
 
 public class CutScenes : ModLet
@@ -102,45 +104,54 @@ pause 2000
 emote farmer 8
 pause 2000
 
-{WarpShop.EventCommands.NorvinSay} ""How'd I get here? I live under the bridge. Crawl out when someone comes by.""
-pause 5000
+speak Norvin ""How'd I get here? I live under the bridge. Crawl out when someone comes by.""
+pause 500
 emote farmer 12
 pause 600
-{WarpShop.EventCommands.NorvinSay} ""What? Trolls live under bridges. That's what the books say, so it must be true.""
-pause 5000
+speak Norvin ""What? Trolls live under bridges. That's what the books say, so it must be true.""
+pause 500
 -- Player swishes weapon
 emote farmer 12
 
-{WarpShop.EventCommands.NorvinSay} ""Okay, okay! Fine. Don't tell the other trolls I told you, but...""
-pause 5000
-{WarpShop.EventCommands.NorvinSay} ""I actually live in a condo in South Zuzu.""
-pause 5000
-{WarpShop.EventCommands.NorvinSay} ""Sure, rent's cheap under the bridge, but you can't get cable.""
-pause 5000
-{WarpShop.EventCommands.NorvinSay} ""I just warp in when someone gets close.""
-pause 6000
-{WarpShop.EventCommands.NorvinSay} ""Anyway — about that toll.""
-pause 5000
+speak Norvin ""Okay, okay! Fine. Don't tell the other trolls I told you, but...""
+speak Norvin ""I actually live in a condo in South Zuzu.""
+speak Norvin ""Sure, rent's cheap under the bridge, but you can't get cable.""
+speak Norvin ""I just warp in when someone gets close.""
+speak Norvin ""Anyway — about that toll.""
+pause 500
 
 emote farmer 8
 pause 1000
 
-{WarpShop.EventCommands.NorvinSay} ""How do I do it?""
-pause 5000
-{WarpShop.EventCommands.NorvinSay} ""hmm...""
-pause 5000
-
-{WarpShop.EventCommands.NorvinSay} ""You’re wanting some of this warp action...""
-pause 5000
-{WarpShop.EventCommands.NorvinSay} ""I got a teleporter I could part with. Base model’s cheap, and upgradeable.""
-pause 5000
-{WarpShop.EventCommands.NorvinSay} ""I’ll make you a good deal on it.""
-pause 5000
+speak Norvin ""How do I do it?""
+speak Norvin ""hmm...""
+-- lightbulb emote of some kind?
+speak Norvin ""You’re wanting some of this warp action...""
+speak Norvin ""I got a teleporter I could part with. Base model’s cheap, and upgradeable.""
+speak Norvin ""I’ll make you a good deal on it...""
+pause 2000
 
 end fade
 ");
             });
         }
-
+        else if (e.NameWithoutLocale.IsEquivalentTo("Data/Characters"))
+        {
+            e.Edit(editor =>
+            {
+                var data = editor.AsDictionary<string, CharacterData>().Data;
+                data[I("Norvin")] = new CharacterData()
+                {
+                    DisplayName = L("Norvin"),
+                    CanReceiveGifts = false,
+                    CanSocialize = I("FALSE"),
+                    PerfectionScore = false,
+                };
+            });
+        }
+        else if (e.NameWithoutLocale.IsEquivalentTo($"Portraits/Norvin"))
+        {
+            e.LoadFromModFile<Texture2D>("assets/norvin-portrait.png", AssetLoadPriority.Medium);
+        }
     }
 }
