@@ -4,9 +4,9 @@
 - [x] Make intro event read from data and not use {nSay} shortcut
 - [ ] Give Norvin a dialog like the dwarf
   -   "Corporate banned us from eating people who don't pay the toll.  Seems like the extra toll money didn't pay for the lawsuits."
-- [ ] An NPC will be needed to enable the above dialog.
+- [x] An NPC will be needed to enable the above dialog.
 - [ ] Add more display name conversions for: GI West, GI North, GI East, GI east gem puzzle area, GI Pirate's cove, Mines, Skull Caverns, and Volcano
-- [ ] Long lines are a problem in the events.
+- [x] Long lines are a problem in the events.
 - [x] Using the Marionberry while hovering over furniture causes mayhem.
 - [x] Get rid of Patches.cs; move functionality into Marionberry.
 - [ ] Maybe move the upgrades to the Marionberry tool/object's modData and having the upgrades enabled show in the description

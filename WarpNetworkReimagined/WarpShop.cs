@@ -101,25 +101,99 @@ public class WarpShop  : ModLet
         set => this.psNorvinText.Value = value;
     }
 
+    // SpriteText offers a couple ways to do bubble text - drawStringWithScrollCenteredAt
+    //  draws it in a nice fat font that looks like Norvin's actually yelling...  But it
+    //  can end up with text not visible on the screen and it doesn't support multiline.
+    //  SpriteText.drawSmallTextBubble supports multiline, but it uses a smaller font.
+    //  Our plan is to use drawStringWithScrollCenteredAt if we can, else we'll fall
+    //  back to drawSmallTextBubble.
     private void DisplayOnRenderedStep(object? sender, RenderedStepEventArgs e)
     {
-        if (e.Step == RenderSteps.World_AlwaysFront && this.norvinText is not null)
+        if (e.Step != RenderSteps.World_AlwaysFront || this.norvinText is null)
+            return;
+
+        // SpriteText offers a couple ways to do bubble text - drawStringWithScrollCenteredAt
+        //  draws it in a nice fat font that looks like Norvin's actually yelling...  But it
+        //  can end up with text not visible on the screen and it doesn't support multiline.
+        //  SpriteText.drawSmallTextBubble supports multiline, but it uses a smaller font.
+        //  Our plan is to use drawStringWithScrollCenteredAt if we can, else we'll fall
+        //  back to drawSmallTextBubble.
+
+        Vector2 screenPos = Game1.GlobalToLocal(this.norvinText.WorldPosition);
+        string text = this.norvinText.Text;
+        float alpha = this.norvinText.Alpha;
+
+        int viewportWidth = Game1.viewport.Width;
+        const int margin = 32;    // keep bubbles away from screen edges
+        const int minWidth = 200; // safety minimum for small bubble
+
+        // Figure out how big the text will be with drawStringWithScrollCenteredAt...
+        int bubbleWidth = SpriteText.getWidthOfString(text);
+        float bigLeft  = screenPos.X - bubbleWidth / 2f;
+        float bigRight = screenPos.X + bubbleWidth / 2f;
+
+        bool bigFits =
+            bigLeft  >= margin &&
+            bigRight <= viewportWidth - margin;
+
+        if (bigFits)
         {
-            if (this.norvinText != null)
-            {
-                Vector2 screenPos = Game1.GlobalToLocal(this.norvinText.WorldPosition);
-                SpriteText.drawStringWithScrollCenteredAt(
-                    e.SpriteBatch,
-                    this.norvinText.Text,
-                    (int)screenPos.X,
-                    (int)screenPos.Y,
-                    alpha: this.norvinText.Alpha,
-                    scrollType: 1,
-                    layerDepth: 1f // above everything but UI
-                );
-            }
+            SpriteText.drawStringWithScrollCenteredAt(
+                e.SpriteBatch,
+                text,
+                (int)screenPos.X,
+                (int)screenPos.Y,
+                alpha: alpha,
+                scrollType: 1,
+                layerDepth: 1f
+            );
+            return;
         }
+
+        // We need to fall back to a small bubble.
+        //
+        // We want the widest bubble that fits around the current center.
+        float availableLeft  = screenPos.X - margin;
+        float availableRight = viewportWidth - margin - screenPos.X;
+
+        float maxHalfWidthCentered = Math.Min(availableLeft, availableRight);
+        int maxWidthCentered = (int)(maxHalfWidthCentered * 2f);
+
+        int maxWidth;
+        Vector2 bubbleCenter = screenPos;
+
+        if (maxWidthCentered >= minWidth)
+        {
+            // We can keep the current center and still have a decent width.
+            maxWidth = maxWidthCentered;
+        }
+        else
+        {
+            // Shift the bubble center so minWidth fits ---
+            float halfMin = minWidth / 2f;
+            float minCenterX = margin + halfMin;
+            float maxCenterX = viewportWidth - margin - halfMin;
+
+            bubbleCenter.X = Clamp(screenPos.X, minCenterX, maxCenterX);
+            maxWidth = minWidth;
+        }
+
+        SpriteText.drawSmallTextBubble(
+            e.SpriteBatch,
+            text,
+            bubbleCenter,
+            maxWidth: maxWidth,
+            layerDepth: 1f
+        );
     }
+
+    private static float Clamp(float value, float min, float max)
+    {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
 
     private bool HasPaidToll
     {
@@ -364,7 +438,7 @@ public class WarpShop  : ModLet
         }
 
         // Maybe yell at the player
-        if (!Game1.eventUp && this.IsNorvinPresent && this.norvinText is null && this.boothAnimations.Count == 0 && !this.HasPaidToll && Game1.random.Next(60 * 15) == 0)
+        if (!Game1.eventUp && this.IsNorvinPresent && this.norvinText is null && this.boothAnimations.Count == 0 && !this.HasPaidToll && Game1.random.Next(60 * 10 /* about 10 a second interval */) == 0)
         {
             var nearestFarmer = Utility.isThereAFarmerWithinDistance(new Vector2(WarpShop.BoothLocationX + (WarpShop.BoothWidthInTiles>>1), WarpShop.BoothLocationY + (WarpShop.BoothHeightInTiles>>1)), 25, mountain);
             int durationInTicks = WarpShop.MessageDurationInMs * 60 / 1000;
