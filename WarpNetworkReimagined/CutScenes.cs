@@ -40,11 +40,11 @@ farmer 79 14 1
 
 skippable
 
-move farmer 0 4 2
+move farmer 0 6 2
 
 {WarpShop.EventCommands.NorvinWarpIn}
 move farmer 2 0 1
-move farmer 0 4 1
+move farmer 0 2 1
 {WarpShop.EventCommands.NorvinSay} ""Hey you!  You gotta pay the toll to cross the bridge!""
 move farmer 0 4 1
 move farmer 4 0 0
@@ -99,6 +99,7 @@ move farmer 0 4 0
 move farmer 1 0 1
 
 {WarpShop.EventCommands.NorvinWarpIn}
+pause 700
 {WarpShop.EventCommands.NorvinSay} ""look, you...""
 pause 2000
 emote farmer 8
@@ -146,6 +147,13 @@ end fade
                     CanReceiveGifts = false,
                     CanSocialize = I("FALSE"),
                     PerfectionScore = false,
+                    CanGreetNearbyCharacters = false,
+
+                    // Without this, Norvin gets drawn at the center of town.  Surely there's a magic flag I should
+                    // be setting to fix that, but I can't find it.
+                    HomeRegion = I("Other"), // <- ditto
+                    // actually does the job in a hacky and lame way:
+                    Home = [new CharacterHomeData() { Location = I("ArchaeologyHouse"), Tile = new Point(-1000,-1000) }]
                 };
             });
         }
