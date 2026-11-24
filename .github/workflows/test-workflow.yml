@@ -5,6 +5,6 @@ on:
 
 jobs:
   test:
-    uses: nermnermnerm/workflows/workflows/.github/workflows/hello.yml@main
+    uses: NermNermNerm/workflows/workflows/.github/workflows/hello.yml@main
     with:
       mod_name: WarpNetworkReimagined
