@@ -1,0 +1,10 @@
+name: Test Central Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: nermnermnerm/workflows/workflows/.github/workflows/hello.yml@main
+    with:
+      mod_name: WarpNetworkReimagined
